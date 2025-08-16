@@ -1,0 +1,98 @@
+components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+info:
+  description: Endpoint untuk membuat jadwal Zoom meeting (sekali atau berulang).
+  title: Rapatin API - Create Schedule
+  version: 1.0.0
+openapi: 3.0.0
+paths:
+  /schedules:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                is_language_interpretation:
+                  example: false
+                  type: boolean
+                is_meeting_qna:
+                  example: false
+                  type: boolean
+                is_meeting_registration:
+                  example: false
+                  type: boolean
+                is_mute_participant_upon_entry:
+                  example: true
+                  type: boolean
+                is_req_permission_to_unmute_participants:
+                  example: false
+                  type: boolean
+                passcode:
+                  example: abc123
+                  maxLength: 10
+                  type: string
+                product_id:
+                  example: 1
+                  type: integer
+                recurring:
+                  example: false
+                  type: boolean
+                start_date:
+                  example: '2025-08-20'
+                  format: date
+                  type: string
+                start_time:
+                  example: '14:00'
+                  type: string
+                topic:
+                  example: Rapat Evaluasi Tim
+                  maxLength: 200
+                  type: string
+              required:
+              - product_id
+              - topic
+              - passcode
+              - start_date
+              - start_time
+              - recurring
+              type: object
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              example:
+                data:
+                  account:
+                    name: Space 11
+                  customer:
+                    email: dulugeser@gmail.com
+                    name: Akun Coba
+                  editable: true
+                  id: 29
+                  join_url: https://us06web.zoom.us/j/81753665961?pwd=...
+                  meeting_id: 81753665961
+                  product:
+                    capacity: 100
+                    name: Meeting 100 Participants
+                  recurring: false
+                  start_date: '2025-08-20'
+                  start_time: '14:00:00'
+                  topic: Rapat From Postman
+                response:
+                  message: Record created successfully
+                  status: success
+                  status_code: 201
+          description: Schedule created successfully
+      security:
+      - bearerAuth: []
+      summary: Create a new Zoom meeting schedule
+      tags:
+      - Schedule
+servers:
+- url: https://app.rapatin.id/api
