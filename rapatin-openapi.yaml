@@ -1,0 +1,241 @@
+openapi: 3.0.0
+info:
+  title: Rapatin
+  description: Rest api rapatin apps
+  version: 1.0.0
+servers:
+- url: https://api.rapatin.id
+paths:
+  /api/auth/register:
+    post:
+      summary: Register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              name: Budi
+              email: budi@example.com
+              phone: 08123456789
+              address: Jl. Mawar
+              password: secret123
+              password_confirmation: secret123
+              role: CUSTOMER
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security: []
+  /api/auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              email: admin@dev1.rapatin.id
+              password: '12345678'
+              device: postman
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security: []
+  /api/auth/me:
+    get:
+      summary: Me
+      requestBody: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+  /api/auth/profile:
+    put:
+      summary: Update Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              name: Budi Santoso
+              phone: 0811222333
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+  /api/auth/password:
+    put:
+      summary: Change Password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              current_password: secret123
+              password: newsecret456
+              password_confirmation: newsecret456
+              device: postman
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+  /api/auth/logout:
+    post:
+      summary: Logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+  /api/auth/logout-all:
+    post:
+      summary: Logout All
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+  /api/products:
+    get:
+      summary: List Products
+      requestBody: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+  /api/products/4:
+    get:
+      summary: Show Product
+      requestBody: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+  /api/schedules:
+    get:
+      summary: List Schedules
+      requestBody: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+    post:
+      summary: Create Schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              product_id: 1
+              topic: Weekly Team Sync
+              passcode: '123456'
+              start_date: '2025-08-20'
+              start_time: '14:00'
+              recurring: false
+              is_meeting_registration: false
+              is_meeting_qna: false
+              is_language_interpretation: false
+              is_mute_participant_upon_entry: true
+              is_req_permission_to_unmute_participants: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+  /api/schedules/1:
+    get:
+      summary: Show Schedule
+      requestBody: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+    delete:
+      summary: Delete Schedule
+      requestBody: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+  /api/schedules/46:
+    put:
+      summary: Update Schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              topic: Updated Meeting Title
+              passcode: '456789'
+              is_meeting_qna: true
+              is_language_interpretation: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              example: {}
+      security:
+      - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
