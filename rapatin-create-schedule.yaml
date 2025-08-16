@@ -17,6 +17,27 @@ paths:
           application/json:
             schema:
               properties:
+                product_id:
+                  example: 1
+                  type: integer
+                topic:
+                  example: Rapat Evaluasi Tim
+                  maxLength: 200
+                  type: string
+                passcode:
+                  example: abc123
+                  maxLength: 10
+                  type: string
+                start_date:
+                  example: '2025-08-20'
+                  format: date
+                  type: string
+                start_time:
+                  example: '14:00'
+                  type: string
+                recurring:
+                  example: false
+                  type: boolean
                 is_language_interpretation:
                   example: false
                   type: boolean
@@ -32,27 +53,6 @@ paths:
                 is_req_permission_to_unmute_participants:
                   example: false
                   type: boolean
-                passcode:
-                  example: abc123
-                  maxLength: 10
-                  type: string
-                product_id:
-                  example: 1
-                  type: integer
-                recurring:
-                  example: false
-                  type: boolean
-                start_date:
-                  example: '2025-08-20'
-                  format: date
-                  type: string
-                start_time:
-                  example: '14:00'
-                  type: string
-                topic:
-                  example: Rapat Evaluasi Tim
-                  maxLength: 200
-                  type: string
               required:
               - product_id
               - topic
@@ -71,19 +71,19 @@ paths:
                   account:
                     name: Space 11
                   customer:
-                    email: dulugeser@gmail.com
-                    name: Akun Coba
+                    email: example@mail.com
+                    name: Example Account
                   editable: true
                   id: 29
-                  join_url: https://us06web.zoom.us/j/81753665961?pwd=...
-                  meeting_id: 81753665961
+                  join_url: https://us06web.zoom.us/j/81750665961?pwd=...
+                  meeting_id: 81750665961
                   product:
                     capacity: 100
                     name: Meeting 100 Participants
                   recurring: false
                   start_date: '2025-08-20'
                   start_time: '14:00:00'
-                  topic: Rapat From Postman
+                  topic: Created From Postman
                 response:
                   message: Record created successfully
                   status: success
@@ -91,8 +91,8 @@ paths:
           description: Schedule created successfully
       security:
       - bearerAuth: []
-      summary: Create a new Zoom meeting schedule
+      summary: Membuat jadwal rapat Zoom di Rapatin
       tags:
-      - Schedule
+      - Create a Schedule
 servers:
-- url: https://app.rapatin.id/api
+- url: https://api.rapatin.id/
