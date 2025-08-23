@@ -22,8 +22,8 @@ paths:
         - Untuk `recurrence` = `2` (Mingguan) sertakan `weekly_days`.
         - Untuk `recurrence` = `3` (Bulanan) pilih salah satu:
           `monthly_day` atau `monthly_week`.
-        - Jika `end_type=end_date`: sertakan `end_date`.
-        - Jika `end_type=end_after_type`: sertakan `end_after_type`.
+        - Jika `end_type` =` end_date`: sertakan `end_date`.
+        - Jika `end_type` = `end_after_type`: sertakan `end_after_type`.
       tags: [Create Schedules]
       parameters:
         - in: header
@@ -56,7 +56,12 @@ paths:
                   properties:
                     product_id:
                       type: integer
-                      description: "ID produk (1=100, 2=300, 3=500, 4=1000 peserta)."
+                      description: |-
+                      ID produk untuk kapasitas peserta:
+                      - `1` = 100 peserta
+                      - `2` = 300 peserta
+                      - `3` = 500 peserta
+                      - `4` = 1000 peserta
                     topic:
                       type: string
                       maxLength: 200
@@ -74,8 +79,7 @@ paths:
                       description: "Jam pelaksanaan (format 24 jam, HH:MM)"
                     recurring:
                       type: boolean
-                      enum: [false]
-                      description: "Harus false untuk one-time meeting"
+                      description: "Harus `false` untuk one-time meeting"
                     is_meeting_registration:
                       type: boolean
                       default: false
@@ -107,7 +111,12 @@ paths:
                   properties:
                     product_id:
                       type: integer
-                      description: "ID produk (1=100, 2=300, 3=500, 4=1000 peserta)."
+                      description: |-
+                      ID produk untuk kapasitas peserta:
+                      - `1` = 100 peserta
+                      - `2` = 300 peserta
+                      - `3` = 500 peserta
+                      - `4` = 1000 peserta
                     topic:
                       type: string
                       maxLength: 200
@@ -125,28 +134,35 @@ paths:
                       description: "Jam pelaksanaan (format 24 jam, HH:MM)"
                     recurring:
                       type: boolean
-                      enum: [true]
-                      description: "Harus true untuk recurring meeting"
+                      description: "Harus `true` untuk recurring meeting"
                     recurrence:
                       type: integer
                       enum: [1, 2, 3]
-                      description: "Jenis pengulangan: 1=Harian, 2=Mingguan, 3=Bulanan"
+                      description: "Jenis pengulangan: `1` = Harian, `2` = Mingguan, `3` = Bulanan"
                     repeat_interval:
                       type: integer
                       minimum: 1
-                      description: "Interval pengulangan (Harian max 99, Mingguan max 50, Bulanan max 10)"
+                      description: "Interval pengulangan (Harian max `99`, Mingguan max `50`, Bulanan max `10`)"
                     weekly_days:
                       type: array
                       items:
                         type: integer
                         minimum: 1
                         maximum: 7
-                      description: "Hanya untuk recurrence=2 (Weekly). 1=Sun ... 7=Sat. Bisa lebih dari satu."
+                      description: |-
+                      Hanya untuk `recurrence` = `2` (Mingguan).
+                      - `1` = Sunday
+                      - `2` = Monday
+                      - `3` = Tuesday
+                      - `4` = Wednesday
+                      - `5` = Thursday
+                      - `6` = Friday
+                      - `7` = Saturday
                     monthly_day:
                       type: integer
                       minimum: 1
                       maximum: 31
-                      description: "Hanya untuk recurrence=3 (Monthly). Alternatif dari monthly_week."
+                      description: "Hanya untuk `recurrence` = `3` (Bulanan). Alternatif dari `monthly_week`."
                     monthly_week:
                       type: integer
                       enum: [1, 2, 3, 4, 5]
