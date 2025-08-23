@@ -431,18 +431,18 @@ components:
             start_date: { type: string, format: date }
             start_time: { type: string }
             meeting_id: { type: integer }
-            occurence_id: { type: string, nullable: true }
-            join_url: { type: string }
-            registration_url: { type: string, nullable: true }
-            waiting_room: { type: integer }
+            occurence_id: { type: string, nullable: true, description: ID pengulangan jika menggunakan recurring }
+            join_url: { type: string, description: url untuk bergabung atau masuk ke ruang Zoom }
+            registration_url: { type: string, nullable: true, description: Jika mengaktifkan registrasi url ini untuk pendaftaran bagi peserta }
+            waiting_room: { type: integer, description: Status ruang apakah dibuka atau ditutup. 1 = ditutup, 0 = dibuka }
             is_meeting_registration: { type: boolean }
             is_meeting_qna: { type: boolean }
             is_language_interpretation: { type: boolean }
             is_mute_participant_upon_entry: { type: boolean }
             is_req_permission_to_unmute_participants: { type: boolean }
-            editable: { type: boolean }
-            is_used: { type: boolean }
-            total_recurring: { type: integer }
+            editable: { type: boolean, description: Apakah jadwal ini bisa dirubah tanggal atau jamnya. Jika jadwal sudah pernah ada yang masuk, maka tidak bisa dirubah. }
+            is_used: { type: boolean, description: APakah ruang Zoom pernah digunakan atau belum }
+            total_recurring: { type: integer, description: Jumlah recurring yang dibuat }
             custom_live_streaming:
               type: object
               properties:
@@ -466,7 +466,7 @@ components:
               type: object
               description: Rincian pengulangan (jika recurring).
               properties:
-                total_recurring: { type: integer, nullable: true }
+                total_recurring: { type: integer, nullable: true, , description: Jumlah recurring yang dibuat }
                 recurrence: { type: integer, nullable: true }
                 repeat_interval: { type: integer, nullable: true }
                 monthly_day: { type: integer, nullable: true }
@@ -483,7 +483,7 @@ components:
                 type: object
                 properties:
                   id: { type: integer }
-                  occurence_id: { type: string }
+                  occurence_id: { type: string, description: ID pengulangan jika menggunakan recurring }
                   start_date: { type: string, format: date }
                   start_time: { type: string }
                   waiting_room: { type: integer }
