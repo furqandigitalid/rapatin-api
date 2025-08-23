@@ -80,22 +80,27 @@ paths:
                     recurring:
                       type: boolean
                       enum: [false]
-                      description: "Harus false untuk one-time meeting"
+                      description: "Harus false untuk one-time schedule"
                     is_meeting_registration:
                       type: boolean
                       default: false
+                      description: Apakah membutuhkan registrasi peserta.
                     is_meeting_qna:
                       type: boolean
                       default: false
+                      description: Mengatur aktif tidaknya fitur QnA di dalam ruang Zoom
                     is_language_interpretation:
                       type: boolean
                       default: false
+                      description: Aktifkan fitur juru bahasa (language interpretation).
                     is_mute_participant_upon_entry:
                       type: boolean
                       default: false
+                      description: Mute otomatis saat peserta masuk.
                     is_req_permission_to_unmute_participants:
                       type: boolean
                       default: false
+                      description: Peserta membutuhkan izin host untuk melakukan unmute.
 
                 - title: Recurring Schedule
                   type: object
@@ -183,18 +188,23 @@ paths:
                     is_meeting_registration:
                       type: boolean
                       default: false
+                      description: Apakah membutuhkan registrasi peserta.
                     is_meeting_qna:
                       type: boolean
                       default: false
+                      description: Mengatur aktif tidaknya fitur QnA di dalam ruang Zoom
                     is_language_interpretation:
                       type: boolean
                       default: false
+                      description: Aktifkan fitur juru bahasa (language interpretation).
                     is_mute_participant_upon_entry:
                       type: boolean
                       default: false
+                      description: Mute otomatis saat peserta masuk.
                     is_req_permission_to_unmute_participants:
                       type: boolean
                       default: false
+                      description: Peserta membutuhkan izin host untuk melakukan unmute.
             examples:
               oneTime:
                 summary: One-time Schedule
