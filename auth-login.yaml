@@ -9,6 +9,8 @@ paths:
   /auth/login:
     post:
       summary: Login untuk Mendapatkan Token
+      tags:
+      - Authentication
       requestBody:
         required: true
         content:
