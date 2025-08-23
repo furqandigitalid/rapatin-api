@@ -14,9 +14,11 @@ paths:
       description: |-
         Hapus jadwal meeting Zoom.
 
-        - Untuk jadwal **non-recurring**, cukup kirim `meeting_id` (menghapus seluruh jadwal).
-        - Untuk jadwal **recurring**, sertakan query `occurrence_id` untuk menghapus salah satu occurrence.
-          Nilai `occurrence_id` merujuk ke `data.occurrences[].occurence_id` pada response pembuatan jadwal.
+        - Untuk jadwal **non-recurring**, kirim **`meeting_id`** saja → menghapus seluruh jadwal.
+        - Untuk jadwal **recurring**:
+          - **Hapus seluruh seri/semua occurrence** → kirim **`meeting_id`** saja (tanpa `occurrence_id`), sama seperti non-recurring.
+          - **Hapus satu occurrence tertentu** → sertakan query **`occurrence_id`**.
+            Nilai `occurrence_id` merujuk ke `data.occurrences[].occurence_id` pada response pembuatan jadwal.
       parameters:
         - in: header
           name: Authorization
@@ -48,7 +50,7 @@ paths:
       # Contoh request
       x-codeSamples:
         - lang: cURL
-          label: Non-recurring (hapus seluruh jadwal)
+          label: Non-recurring / All Recurring (hapus seluruh jadwal/seri)
           source: |
             curl -L \
               --request DELETE \
