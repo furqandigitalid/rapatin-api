@@ -12,6 +12,18 @@ paths:
       description: >
         Buat jadwal meeting baru. Gunakan Bearer Token pada setiap request:
         `Authorization: Bearer {token}`.
+
+        Jika `recurring` = **true**, maka parameter **WAJIB**:
+        - `recurrence` (1=Harian, 2=Mingguan, 3=Bulanan)
+        - `repeat_interval`
+        - `end_type` (`end_date` atau `end_after_type`)
+
+        Parameter **kondisional**:
+        - Untuk `recurrence=2 (Weekly)`: sertakan `weekly_days` (1=Sun ... 7=Sat).
+        - Untuk `recurrence=3 (Monthly)`: pilih salah satu **saja**:
+          `monthly_day` **atau** `monthly_week`.
+        - Jika `end_type=end_date`: sertakan `end_date`.
+        - Jika `end_type=end_after_type`: sertakan `end_after_type`.
       tags: [Schedules]
       security:
         - bearerAuth: []
