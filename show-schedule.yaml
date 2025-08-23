@@ -16,8 +16,8 @@ paths:
 
         - Untuk jadwal **non-recurring**, kirim **`meeting_id`** saja.
         - Untuk jadwal **recurring**:
-          - **Tanpa `occurrence_id`** → kembalikan detail jadwal (beserta informasi pengulangan/occurrences jika tersedia).
-          - **Dengan `occurrence_id`** → targetkan salah satu occurrence tertentu.
+          - Tanpa `occurrence_id` → kembalikan detail jadwal (beserta informasi pengulangan/occurrences jika tersedia).
+          - Dengan `occurrence_id` → targetkan salah satu occurrence tertentu.
             Nilai `occurrence_id` merujuk ke `data.occurrences[].occurence_id` dari response pembuatan jadwal.
       parameters:
         - in: header
@@ -283,7 +283,7 @@ components:
               description: URL pendaftaran peserta (jika registrasi diaktifkan).
             waiting_room:
               type: integer
-              description: Status ruang tunggu (1=aktif, 0=nonaktif).
+              description: Status dibuka atau ditutupnya ruang Zoom (1=ditutup, 0=dibuka).
             is_meeting_registration:
               type: boolean
               description: Apakah membutuhkan registrasi peserta.
@@ -301,7 +301,7 @@ components:
               description: Peserta butuh izin host untuk unmute.
             editable:
               type: boolean
-              description: Apakah jadwal bisa diubah; akan `false` jika sudah dipakai.
+              description: Apakah jadwal bisa diubah; akan **false** jika sudah dipakai.
             is_used:
               type: boolean
               description: Apakah ruang Zoom pernah digunakan.
