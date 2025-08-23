@@ -1,10 +1,11 @@
 openapi: 3.0.0
 info:
-  title: Schedules
+  title: Create Schedules
   version: 1.0.0
   description: Spesifikasi untuk endpoint schedules pada API Rapatin.
 servers:
   - url: https://api.rapatin.id
+
 paths:
   /schedules:
     post:
@@ -19,22 +20,14 @@ paths:
 
         Parameter **kondisional**:
         - Untuk `recurrence` = `2` (Mingguan) sertakan `weekly_days`.
-        - Untuk `recurrence` = `3` (Bukanan) pilih salah satu:
+        - Untuk `recurrence` = `3` (Bulanan) pilih salah satu:
           `monthly_day` atau `monthly_week`.
         - Jika `end_type=end_date`: sertakan `end_date`.
         - Jika `end_type=end_after_type`: sertakan `end_after_type`.
-      tags: [Schedules]
-      security:
-        - bearerAuth: []
+      tags: [Create Schedules]
       parameters:
         - in: header
           name: Content-Type
-          required: true
-          schema:
-            type: string
-            example: application/json
-        - in: header
-          name: Accept
           required: true
           schema:
             type: string
@@ -51,8 +44,139 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: "#/components/schemas/OneTimeScheduleRequest"
-                - $ref: "#/components/schemas/RecurringScheduleRequest"
+                - title: One-time Schedule
+                  type: object
+                  required:
+                    - product_id
+                    - topic
+                    - passcode
+                    - start_date
+                    - start_time
+                    - recurring
+                  properties:
+                    product_id:
+                      type: integer
+                      description: "ID produk (1=100, 2=300, 3=500, 4=1000 peserta)."
+                    topic:
+                      type: string
+                      maxLength: 200
+                      description: Judul/topik meeting
+                    passcode:
+                      type: string
+                      maxLength: 10
+                      description: Kode sandi rapat
+                    start_date:
+                      type: string
+                      format: date
+                      description: "Tanggal pelaksanaan (YYYY-MM-DD)"
+                    start_time:
+                      type: string
+                      description: "Jam pelaksanaan (format 24 jam, HH:MM)"
+                    recurring:
+                      type: boolean
+                      enum: [false]
+                      description: "Harus false untuk one-time meeting"
+                    is_meeting_registration:
+                      type: boolean
+                      default: false
+                    is_meeting_qna:
+                      type: boolean
+                      default: false
+                    is_language_interpretation:
+                      type: boolean
+                      default: false
+                    is_mute_participant_upon_entry:
+                      type: boolean
+                      default: false
+                    is_req_permission_to_unmute_participants:
+                      type: boolean
+                      default: false
+
+                - title: Recurring Schedule
+                  type: object
+                  required:
+                    - product_id
+                    - topic
+                    - passcode
+                    - start_date
+                    - start_time
+                    - recurring
+                    - recurrence
+                    - repeat_interval
+                    - end_type
+                  properties:
+                    product_id:
+                      type: integer
+                      description: "ID produk (1=100, 2=300, 3=500, 4=1000 peserta)."
+                    topic:
+                      type: string
+                      maxLength: 200
+                      description: Judul/topik meeting
+                    passcode:
+                      type: string
+                      maxLength: 10
+                      description: Kode sandi rapat
+                    start_date:
+                      type: string
+                      format: date
+                      description: "Tanggal pelaksanaan (YYYY-MM-DD)"
+                    start_time:
+                      type: string
+                      description: "Jam pelaksanaan (format 24 jam, HH:MM)"
+                    recurring:
+                      type: boolean
+                      enum: [true]
+                      description: "Harus true untuk recurring meeting"
+                    recurrence:
+                      type: integer
+                      enum: [1, 2, 3]
+                      description: "Jenis pengulangan: 1=Harian, 2=Mingguan, 3=Bulanan"
+                    repeat_interval:
+                      type: integer
+                      minimum: 1
+                      description: "Interval pengulangan (Harian max 99, Mingguan max 50, Bulanan max 10)"
+                    weekly_days:
+                      type: array
+                      items:
+                        type: integer
+                        minimum: 1
+                        maximum: 7
+                      description: "Hanya untuk recurrence=2 (Weekly). 1=Sun ... 7=Sat. Bisa lebih dari satu."
+                    monthly_day:
+                      type: integer
+                      minimum: 1
+                      maximum: 31
+                      description: "Hanya untuk recurrence=3 (Monthly). Alternatif dari monthly_week."
+                    monthly_week:
+                      type: integer
+                      enum: [1, 2, 3, 4, 5]
+                      description: "Hanya untuk recurrence=3 (Monthly). 1=First, 2=Second, 3=Third, 4=Fourth, 5=Last."
+                    end_type:
+                      type: string
+                      enum: [end_date, end_after_type]
+                      description: "Cara berhenti: berdasarkan tanggal atau jumlah kemunculan."
+                    end_date:
+                      type: string
+                      format: date
+                      description: "Wajib jika end_type=end_date."
+                    end_after_type:
+                      type: integer
+                      description: "Wajib jika end_type=end_after_type (jumlah pengulangan)."
+                    is_meeting_registration:
+                      type: boolean
+                      default: false
+                    is_meeting_qna:
+                      type: boolean
+                      default: false
+                    is_language_interpretation:
+                      type: boolean
+                      default: false
+                    is_mute_participant_upon_entry:
+                      type: boolean
+                      default: false
+                    is_req_permission_to_unmute_participants:
+                      type: boolean
+                      default: false
             examples:
               oneTime:
                 summary: One-time Schedule
@@ -250,120 +374,6 @@ components:
       bearerFormat: JWT
 
   schemas:
-    # Bagian umum (common fields & flags)
-    CommonScheduleFields:
-      type: object
-      properties:
-        product_id:
-          type: integer
-          description: |-
-            ID produk untuk kapasitas peserta.
-            1=100, 2=300, 3=500, 4=1000.
-        topic:
-          type: string
-          maxLength: 200
-          description: Judul/topik meeting.
-        passcode:
-          type: string
-          maxLength: 10
-          description: Kode sandi untuk bergabung.
-        start_date:
-          type: string
-          format: date
-          description: Tanggal pelaksanaan (YYYY-MM-DD).
-        start_time:
-          type: string
-          description: Jam pelaksanaan (format 24 jam, HH:MM).
-        is_meeting_registration:
-          type: boolean
-          description: Apakah membutuhkan registrasi peserta.
-          default: false
-        is_meeting_qna:
-          type: boolean
-          description: Aktifkan fitur Q&A.
-          default: false
-        is_language_interpretation:
-          type: boolean
-          description: Aktifkan fitur juru bahasa.
-          default: false
-        is_mute_participant_upon_entry:
-          type: boolean
-          description: Mute otomatis saat peserta masuk.
-          default: false
-        is_req_permission_to_unmute_participants:
-          type: boolean
-          description: Host perlu izin agar peserta dapat unmute.
-          default: false
-      required: [product_id, topic, passcode, start_date, start_time]
-
-    OneTimeScheduleRequest:
-      allOf:
-        - $ref: "#/components/schemas/CommonScheduleFields"
-        - type: object
-          properties:
-            recurring:
-              type: boolean
-              enum: [false]
-              description: Selalu `false` untuk one-time meeting.
-          required: [recurring]
-
-    RecurringScheduleRequest:
-      allOf:
-        - $ref: "#/components/schemas/CommonScheduleFields"
-        - type: object
-          properties:
-            recurring:
-              type: boolean
-              enum: [true]
-              description: Harus `true` untuk recurring meeting.
-            recurrence:
-              type: integer
-              enum: [1, 2, 3]
-              description: Jenis pengulangan. 1=Harian, 2=Mingguan, 3=Bulanan.
-            repeat_interval:
-              type: integer
-              minimum: 1
-              description: >
-                Interval pengulangan. Batas: Harian max 99, Mingguan max 50, Bulanan max 10.
-            weekly_days:
-              type: array
-              items:
-                type: integer
-                minimum: 1
-                maximum: 7
-              description: >
-                Hanya untuk `recurrence=2 (Weekly)`. Pilih hari:
-                1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday,
-                5=Thursday, 6=Friday, 7=Saturday. Bisa lebih dari satu.
-            monthly_day:
-              type: integer
-              minimum: 1
-              maximum: 31
-              description: >
-                Hanya untuk `recurrence=3 (Monthly)`. Tanggal dalam bulan (1-31).
-                Abaikan jika memakai `monthly_week`.
-            monthly_week:
-              type: integer
-              enum: [1, 2, 3, 4, 5]
-              description: >
-                Hanya untuk `recurrence=3 (Monthly)`. Minggu ke- (1=First, 2=Second, 3=Third, 4=Fourth, 5=Last week).
-            end_type:
-              type: string
-              enum: [end_date, end_after_type]
-              description: Metode berhenti—berdasarkan tanggal atau jumlah kemunculan.
-            end_date:
-              type: string
-              format: date
-              description: Wajib jika `end_type=end_date`.
-            end_after_type:
-              type: integer
-              description: Wajib jika `end_type=end_after_type` (jumlah pengulangan).
-          required:
-            - recurring
-            - recurrence
-            - repeat_interval
-            - end_type
-
     ScheduleSuccessResponse:
       type: object
       properties:
@@ -423,7 +433,10 @@ components:
                 repeat_interval: { type: integer, nullable: true }
                 monthly_day: { type: integer, nullable: true }
                 monthly_week: { type: integer, nullable: true }
-                weekly_days: { type: array, items: { type: integer }, nullable: true }
+                weekly_days:
+                  type: array
+                  items: { type: integer }
+                  nullable: true
                 end_date: { type: string, format: date, nullable: true }
                 end_after_type: { type: integer, nullable: true }
             occurrences:
