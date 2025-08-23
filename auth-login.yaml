@@ -9,7 +9,7 @@ paths:
   /auth/login:
     post:
       summary: Login untuk Mendapatkan Token
-      description: Untuk mengakses semua endpoint dalam API Rapatin, pengguna harus melakukan autentikasi terlebih dahulu menggunakan token. Token yang diterima harus digunakan di setiap request API berikutnya dengan menambahkannya ke header: Authorization: Bearer {token}
+      description: > Untuk mengakses semua endpoint dalam API Rapatin, pengguna harus melakukan autentikasi terlebih dahulu menggunakan token. Token yang diterima harus digunakan di setiap request API berikutnya dengan menambahkannya ke header: Authorization: Bearer {token}
       tags:
         - Authentication
       requestBody:
