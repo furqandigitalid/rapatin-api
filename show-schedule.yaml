@@ -7,7 +7,7 @@ servers:
   - url: https://api.rapatin.id
 
 paths:
-  /schedules/{meeting_id}:
+  /schedules/{meeting_id}?occurrence_id={occurrence_id}:
     get:
       tags: [Show Schedule]
       summary: Melihat Detil Jadwal Rapat
@@ -20,6 +20,18 @@ paths:
           - **Dengan `occurrence_id`** → targetkan salah satu occurrence tertentu.
             Nilai `occurrence_id` merujuk ke `data.occurrences[].occurence_id` dari response pembuatan jadwal.
       parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
         - in: path
           name: meeting_id
           required: true
@@ -34,18 +46,6 @@ paths:
             type: string
             example: "1756108800000"
           description: Opsional. Sertakan untuk menargetkan satu occurrence pada jadwal recurring.
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: "Bearer {token}"
-        - in: header
-          name: Accept
-          required: true
-          schema:
-            type: string
-            example: application/json
 
       x-codeSamples:
         - lang: cURL
