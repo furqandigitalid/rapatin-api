@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: Delete Schedule
+  version: 1.0.0
+  description: Spesifikasi untuk menghapus jadwal rapat pada API Rapatin.
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /schedules/{meeting_id}:
+    delete:
+      tags: [Delete Schedule]
+      summary: Delete Schedule
+      description: |-
+        Hapus jadwal meeting Zoom.
+
+        - Untuk jadwal **non-recurring**, cukup kirim `meeting_id` (menghapus seluruh jadwal).
+        - Untuk jadwal **recurring**, sertakan query `occurrence_id` untuk menghapus salah satu occurrence.
+          Nilai `occurrence_id` merujuk ke `data.occurrences[].occurence_id` pada response pembuatan jadwal.
+      parameters:
+        - in: path
+          name: meeting_id
+          required: true
+          schema: { type: integer }
+          description: Meeting ID dari sebuah jadwal.
+        - in: query
+          name: occurrence_id
+          required: false
+          schema: { type: string }
+          description: Hanya untuk jadwal recurring — ID occurrence yang akan dihapus.
+        - in: header
+          name: Authorization
+          required: true
+          schema: { type: string, example: "Bearer {token}" }
+        - in: header
+          name: Accept
+          required: true
+          schema: { type: string, example: application/json }
+      responses:
+        '200':
+          description: Schedule deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteScheduleResponse"
+              example:
+                response:
+                  status: success
+                  status_code: 200
+                  message: Schedule deleted successfully
+        '401':
+          description: Unauthorized (token tidak valid)
+        '404':
+          description: Schedule not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    DeleteScheduleResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status: { type: string, example: success }
+            status_code: { type: integer, example: 200 }
+            message: { type: string, example: Schedule deleted successfully }
