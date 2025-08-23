@@ -145,11 +145,15 @@ paths:
                     recurrence:
                       type: integer
                       enum: [1, 2, 3]
-                      description: "Jenis pengulangan: 1=Harian, 2=Mingguan, 3=Bulanan"
+                      description: |- 
+                        Jenis pengulangan:
+                        - 1 = Harian
+                        - 2 = Mingguan
+                        - 3 = Bulanan
                     repeat_interval:
                       type: integer
                       minimum: 1
-                      description: "Interval pengulangan (Harian max 99, Mingguan max 50, Bulanan max 10)"
+                      description: "Interval pengulangan. Harian max 99, Mingguan max 50, Bulanan max 10"
                     weekly_days:
                       type: array
                       items:
@@ -157,7 +161,7 @@ paths:
                         minimum: 1
                         maximum: 7
                       description: |-
-                        Hanya untuk <code>recurrence</code> = <code>2</code> (Mingguan).
+                        Hanya untuk **recurrence** = **2** (Mingguan).
                         - 1 = Sunday
                         - 2 = Monday
                         - 3 = Tuesday
@@ -169,22 +173,28 @@ paths:
                       type: integer
                       minimum: 1
                       maximum: 31
-                      description: "Hanya untuk `recurrence` = `3` (Bulanan). Alternatif dari `monthly_week`."
+                      description: "Hanya untuk **recurrence** = **3** (Bulanan). Alternatif dari **monthly_week**."
                     monthly_week:
                       type: integer
                       enum: [1, 2, 3, 4, 5]
-                      description: "Hanya untuk `recurrence` = `3` (Bulanan). 1=First, 2=Second, 3=Third, 4=Fourth, 5=Last."
+                      description: |- 
+                        Hanya untuk **recurrence** = **3** (Bulanan).
+                        - 1 = First week
+                        - 2 = Second week
+                        - 3 = Third week
+                        - 4 = Fourth week
+                        - 5 = Last week
                     end_type:
                       type: string
                       enum: [end_date, end_after_type]
-                      description: "Cara berhenti: berdasarkan tanggal atau jumlah kemunculan."
+                      description: "Cara berhenti: berdasarkan tanggal atau jumlah pengulangan."
                     end_date:
                       type: string
                       format: date
-                      description: "Wajib jika end_type=end_date."
+                      description: "Wajib jika **end_type** = **end_date**."
                     end_after_type:
                       type: integer
-                      description: "Wajib jika end_type=end_after_type (jumlah pengulangan)."
+                      description: "Wajib jika **end_type** = **end_after_type** (jumlah pengulangan)."
                     is_meeting_registration:
                       type: boolean
                       default: false
@@ -221,7 +231,7 @@ paths:
                   is_mute_participant_upon_entry: false
                   is_req_permission_to_unmute_participants: false
               recurringDailyEndDate:
-                summary: Recurring Daily - end on date
+                summary: Recurring Daily - End on Date
                 value:
                   product_id: 4
                   topic: "Recurring Schedule"
@@ -239,7 +249,7 @@ paths:
                   is_mute_participant_upon_entry: false
                   is_req_permission_to_unmute_participants: false
               recurringWeeklyCount:
-                summary: Recurring Weekly - end after count
+                summary: Recurring Weekly - End After Count
                 value:
                   product_id: 3
                   topic: "Recurring Weekly"
@@ -253,7 +263,7 @@ paths:
                   end_type: "end_after_type"
                   end_after_type: 4
               recurringMonthlyCount:
-                summary: Recurring Monthly - end after count
+                summary: Recurring Monthly - End After Count
                 value:
                   product_id: 2
                   topic: "Recurring Monthly"
