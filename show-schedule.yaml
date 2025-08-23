@@ -99,7 +99,6 @@ paths:
                       is_req_permission_to_unmute_participants: false
                       editable: true
                       is_used: false
-                      total_recurring: 0
                       custom_live_streaming:
                         stream_url: null
                         stream_key: null
@@ -149,7 +148,6 @@ paths:
                       is_req_permission_to_unmute_participants: false
                       editable: true
                       is_used: false
-                      total_recurring: 6
                       custom_live_streaming:
                         stream_url: null
                         stream_key: null
@@ -307,9 +305,6 @@ components:
             is_used:
               type: boolean
               description: Apakah ruang Zoom pernah digunakan.
-            total_recurring:
-              type: integer
-              description: Jumlah total occurrence pada seri (0 untuk non-recurring).
             custom_live_streaming:
               type: object
               properties:
@@ -341,7 +336,9 @@ components:
               type: object
               description: Rincian pengulangan (hanya untuk jadwal recurring).
               properties:
-                total_recurring: { type: integer, nullable: true }
+                total_recurring:
+                  type: integer
+                  description: Jumlah total occurrence pada seri (0 untuk non-recurring).
                 recurrence: { type: integer, nullable: true }
                 repeat_interval: { type: integer, nullable: true }
                 monthly_day: { type: integer, nullable: true }
