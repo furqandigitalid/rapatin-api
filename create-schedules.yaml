@@ -157,7 +157,7 @@ paths:
                         minimum: 1
                         maximum: 7
                       description: |-
-                        Hanya untuk `recurrence` = `2` (Mingguan).
+                        Hanya untuk <code>recurrence</code> = <code>2</code> (Mingguan).
                         - 1 = Sunday
                         - 2 = Monday
                         - 3 = Tuesday
