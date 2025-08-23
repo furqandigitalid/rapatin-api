@@ -88,7 +88,7 @@ paths:
                     is_meeting_qna:
                       type: boolean
                       default: false
-                      description: Mengatur aktif tidaknya fitur QnA di dalam ruang Zoom
+                      description: Mengatur aktif tidaknya fitur QnA di dalam ruang Zoom.
                     is_language_interpretation:
                       type: boolean
                       default: false
@@ -145,7 +145,7 @@ paths:
                     recurrence:
                       type: integer
                       enum: [1, 2, 3]
-                      description: |- 
+                      description: |-
                         Jenis pengulangan:
                         - 1 = Harian
                         - 2 = Mingguan
@@ -177,7 +177,7 @@ paths:
                     monthly_week:
                       type: integer
                       enum: [1, 2, 3, 4, 5]
-                      description: |- 
+                      description: |-
                         Hanya untuk **recurrence** = **3** (Bulanan).
                         - 1 = First week
                         - 2 = Second week
@@ -202,7 +202,7 @@ paths:
                     is_meeting_qna:
                       type: boolean
                       default: false
-                      description: Mengatur aktif tidaknya fitur QnA di dalam ruang Zoom
+                      description: Mengatur aktif tidaknya fitur QnA di dalam ruang Zoom.
                     is_language_interpretation:
                       type: boolean
                       default: false
@@ -418,39 +418,79 @@ components:
         response:
           type: object
           properties:
-            status: { type: string, example: success }
-            status_code: { type: integer, example: 201 }
-            message: { type: string, example: Schedule created successfully }
+            status:
+              type: string
+              example: success
+            status_code:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Schedule created successfully
         data:
           type: object
           properties:
-            id: { type: integer, description: ID jadwal }
-            topic: { type: string }
-            passcode: { type: string }
-            recurring: { type: boolean }
-            start_date: { type: string, format: date }
-            start_time: { type: string }
-            meeting_id: { type: integer }
-            occurence_id: { type: string, nullable: true, description: ID pengulangan jika menggunakan recurring }
-            join_url: { type: string, description: url untuk bergabung atau masuk ke ruang Zoom }
-            registration_url: { type: string, nullable: true, description: Jika mengaktifkan registrasi url ini untuk pendaftaran bagi peserta }
-            waiting_room: { type: integer, description: Status ruang apakah dibuka atau ditutup. 1 = ditutup, 0 = dibuka }
-            is_meeting_registration: { type: boolean }
-            is_meeting_qna: { type: boolean }
-            is_language_interpretation: { type: boolean }
-            is_mute_participant_upon_entry: { type: boolean }
-            is_req_permission_to_unmute_participants: { type: boolean }
-            editable: { type: boolean, description: Apakah jadwal ini bisa dirubah tanggal atau jamnya. Jika jadwal sudah pernah ada yang masuk, maka tidak bisa dirubah. }
-            is_used: { type: boolean, description: APakah ruang Zoom pernah digunakan atau belum }
-            total_recurring: { type: integer, description: Jumlah recurring yang dibuat }
+            id:
+              type: integer
+              description: ID jadwal
+            topic:
+              type: string
+            passcode:
+              type: string
+            recurring:
+              type: boolean
+            start_date:
+              type: string
+              format: date
+            start_time:
+              type: string
+            meeting_id:
+              type: integer
+            occurence_id:
+              type: string
+              nullable: true
+              description: ID pengulangan jika menggunakan recurring
+            join_url:
+              type: string
+              description: URL untuk bergabung/masuk ke ruang Zoom
+            registration_url:
+              type: string
+              nullable: true
+              description: Jika registrasi diaktifkan, URL pendaftaran peserta
+            waiting_room:
+              type: integer
+              description: Status ruang tunggu (1 = ditutup, 0 = dibuka)
+            is_meeting_registration:
+              type: boolean
+            is_meeting_qna:
+              type: boolean
+            is_language_interpretation:
+              type: boolean
+            is_mute_participant_upon_entry:
+              type: boolean
+            is_req_permission_to_unmute_participants:
+              type: boolean
+            editable:
+              type: boolean
+              description: Apakah jadwal bisa diubah tanggal/jam-nya. Jika sudah digunakan, tidak bisa diubah.
+            is_used:
+              type: boolean
+              description: Apakah ruang Zoom pernah digunakan
+            total_recurring:
+              type: integer
+              description: Jumlah total kemunculan (recurring) yang dibuat
             custom_live_streaming:
               type: object
               properties:
                 stream_url: { type: string, nullable: true }
                 stream_key: { type: string, nullable: true }
                 live_stream_page_url: { type: string, nullable: true }
-            created_at: { type: string, format: date-time }
-            updated_at: { type: string, format: date-time }
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
             product:
               type: object
               properties:
@@ -466,24 +506,42 @@ components:
               type: object
               description: Rincian pengulangan (jika recurring).
               properties:
-                total_recurring: { type: integer, nullable: true, , description: Jumlah recurring yang dibuat }
-                recurrence: { type: integer, nullable: true }
-                repeat_interval: { type: integer, nullable: true }
-                monthly_day: { type: integer, nullable: true }
-                monthly_week: { type: integer, nullable: true }
+                total_recurring:
+                  type: integer
+                  nullable: true
+                  description: Jumlah recurring yang dibuat
+                recurrence:
+                  type: integer
+                  nullable: true
+                repeat_interval:
+                  type: integer
+                  nullable: true
+                monthly_day:
+                  type: integer
+                  nullable: true
+                monthly_week:
+                  type: integer
+                  nullable: true
                 weekly_days:
                   type: array
                   items: { type: integer }
                   nullable: true
-                end_date: { type: string, format: date, nullable: true }
-                end_after_type: { type: integer, nullable: true }
+                end_date:
+                  type: string
+                  format: date
+                  nullable: true
+                end_after_type:
+                  type: integer
+                  nullable: true
             occurrences:
               type: array
               items:
                 type: object
                 properties:
                   id: { type: integer }
-                  occurence_id: { type: string, description: ID pengulangan jika menggunakan recurring }
+                  occurence_id:
+                    type: string
+                    description: ID pengulangan jika menggunakan recurring
                   start_date: { type: string, format: date }
                   start_time: { type: string }
                   waiting_room: { type: integer }
