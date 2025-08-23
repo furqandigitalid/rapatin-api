@@ -4,13 +4,13 @@ info:
   version: 1.0.0
   description: Spesifikasi untuk endpoint autentikasi (login) pada API Rapatin.
 servers:
-- url: https://api.rapatin.id
+  - url: https://api.rapatin.id
 paths:
   /auth/login:
     post:
       summary: Login untuk Mendapatkan Token
       tags:
-      - Authentication
+        - Authentication
       requestBody:
         required: true
         content:
@@ -29,22 +29,22 @@ paths:
                   type: string
                   description: 'Nama perangkat atau aplikasi (contoh: ''postman'')'
               required:
-              - email
-              - password
-              - device
+                - email
+                - password
+                - device
       parameters:
-      - in: header
-        name: Content-Type
-        required: true
-        schema:
-          type: string
-          example: application/json
-      - in: header
-        name: Accept
-        required: true
-        schema:
-          type: string
-          example: application/json
+        - in: header
+          name: Content-Type
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
       responses:
         '200':
           description: Token berhasil dibuat
@@ -128,3 +128,12 @@ paths:
                     ordersCount: 6
                     createdAt: '2025-08-05T00:56:29.000000Z'
                     updatedAt: '2025-08-19T04:35:04.000000Z'
+        '422':
+          description: Gagal login - Unauthorized
+          content:
+            application/json:
+              example:
+                response:
+                  status: error
+                  status_code: 422
+                  message: Unauthorized
