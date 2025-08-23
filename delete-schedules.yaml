@@ -21,21 +21,49 @@ paths:
         - in: path
           name: meeting_id
           required: true
-          schema: { type: integer }
+          schema:
+            type: integer
+            example: 84727876665
           description: Meeting ID dari sebuah jadwal.
         - in: query
           name: occurrence_id
           required: false
-          schema: { type: string }
+          schema:
+            type: string
+            example: "1756108800000"
           description: Hanya untuk jadwal recurring — ID occurrence yang akan dihapus.
         - in: header
           name: Authorization
           required: true
-          schema: { type: string, example: "Bearer {token}" }
+          schema:
+            type: string
+            example: "Bearer {token}"
         - in: header
           name: Accept
           required: true
-          schema: { type: string, example: application/json }
+          schema:
+            type: string
+            example: application/json
+
+      # Contoh request
+      x-codeSamples:
+        - lang: cURL
+          label: Non-recurring (hapus seluruh jadwal)
+          source: |
+            curl -L \
+              --request DELETE \
+              --url 'https://api.rapatin.id/schedules/84727876665' \
+              --header 'Authorization: Bearer {token}' \
+              --header 'Accept: application/json'
+        - lang: cURL
+          label: Recurring (hapus salah satu occurrence)
+          source: |
+            curl -L \
+              --request DELETE \
+              --url 'https://api.rapatin.id/schedules/84727876665?occurrence_id=1756108800000' \
+              --header 'Authorization: Bearer {token}' \
+              --header 'Accept: application/json'
+
       responses:
         '200':
           description: Schedule deleted successfully
