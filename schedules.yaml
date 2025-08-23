@@ -1,0 +1,622 @@
+openapi: 3.0.0
+info:
+  title: Create Schedules
+  version: 1.0.0
+  description: Spesifikasi untuk endpoint schedules pada API Rapatin.
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /schedules:
+    post:
+      summary: Membuat Jadwal Rapat
+      description: |-
+        Untuk jadwal 1 kali atau 1 tanggal, `recurring` = **false**.
+
+        Jika `recurring` = **true**, maka parameter **WAJIB**:
+        - `recurrence` (1=Harian, 2=Mingguan, 3=Bulanan)
+        - `repeat_interval`
+        - `end_type` (`end_date` atau `end_after_type`)
+
+        Parameter **kondisional**:
+        - Untuk `recurrence` = `2` (Mingguan) sertakan `weekly_days`.
+        - Untuk `recurrence` = `3` (Bulanan) pilih salah satu:
+          `monthly_day` atau `monthly_week`.
+        - Jika `end_type` = `end_date`: sertakan `end_date`.
+        - Jika `end_type` = `end_after_type`: sertakan `end_after_type`.
+      tags: [Create Schedules]
+      parameters:
+        - in: header
+          name: Content-Type
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - title: One-time Schedule
+                  type: object
+                  required:
+                    - product_id
+                    - topic
+                    - passcode
+                    - start_date
+                    - start_time
+                    - recurring
+                  properties:
+                    product_id:
+                      type: integer
+                      description: |-
+                        ID produk untuk kapasitas peserta:
+                        - 1 = 100 peserta
+                        - 2 = 300 peserta
+                        - 3 = 500 peserta
+                        - 4 = 1000 peserta
+                    topic:
+                      type: string
+                      maxLength: 200
+                      description: Judul/topik meeting
+                    passcode:
+                      type: string
+                      maxLength: 10
+                      description: Kode sandi rapat
+                    start_date:
+                      type: string
+                      format: date
+                      description: "Tanggal pelaksanaan (YYYY-MM-DD)"
+                    start_time:
+                      type: string
+                      description: "Jam pelaksanaan (format 24 jam, HH:MM)"
+                    recurring:
+                      type: boolean
+                      enum: [false]
+                      description: "Harus false untuk one-time schedule"
+                    is_meeting_registration:
+                      type: boolean
+                      default: false
+                      description: Apakah membutuhkan registrasi peserta.
+                    is_meeting_qna:
+                      type: boolean
+                      default: false
+                      description: Mengatur aktif tidaknya fitur QnA di dalam ruang Zoom.
+                    is_language_interpretation:
+                      type: boolean
+                      default: false
+                      description: Aktifkan fitur juru bahasa (language interpretation).
+                    is_mute_participant_upon_entry:
+                      type: boolean
+                      default: false
+                      description: Mute otomatis saat peserta masuk.
+                    is_req_permission_to_unmute_participants:
+                      type: boolean
+                      default: false
+                      description: Peserta membutuhkan izin host untuk melakukan unmute.
+
+                - title: Recurring Schedule
+                  type: object
+                  required:
+                    - product_id
+                    - topic
+                    - passcode
+                    - start_date
+                    - start_time
+                    - recurring
+                    - recurrence
+                    - repeat_interval
+                    - end_type
+                  properties:
+                    product_id:
+                      type: integer
+                      description: |-
+                        ID produk untuk kapasitas peserta:
+                        - 1 = 100 peserta
+                        - 2 = 300 peserta
+                        - 3 = 500 peserta
+                        - 4 = 1000 peserta
+                    topic:
+                      type: string
+                      maxLength: 200
+                      description: Judul/topik meeting
+                    passcode:
+                      type: string
+                      maxLength: 10
+                      description: Kode sandi rapat
+                    start_date:
+                      type: string
+                      format: date
+                      description: "Tanggal pelaksanaan (YYYY-MM-DD)"
+                    start_time:
+                      type: string
+                      description: "Jam pelaksanaan (format 24 jam, HH:MM)"
+                    recurring:
+                      type: boolean
+                      enum: [true]
+                      description: "Harus true untuk recurring meeting"
+                    recurrence:
+                      type: integer
+                      enum: [1, 2, 3]
+                      description: |-
+                        Jenis pengulangan:
+                        - 1 = Harian
+                        - 2 = Mingguan
+                        - 3 = Bulanan
+                    repeat_interval:
+                      type: integer
+                      minimum: 1
+                      description: "Interval pengulangan. Harian max 99, Mingguan max 50, Bulanan max 10"
+                    weekly_days:
+                      type: array
+                      items:
+                        type: integer
+                        minimum: 1
+                        maximum: 7
+                      description: |-
+                        Hanya untuk **recurrence** = **2** (Mingguan).
+                        - 1 = Sunday
+                        - 2 = Monday
+                        - 3 = Tuesday
+                        - 4 = Wednesday
+                        - 5 = Thursday
+                        - 6 = Friday
+                        - 7 = Saturday
+                    monthly_day:
+                      type: integer
+                      minimum: 1
+                      maximum: 31
+                      description: "Hanya untuk **recurrence** = **3** (Bulanan). Alternatif dari **monthly_week**."
+                    monthly_week:
+                      type: integer
+                      enum: [1, 2, 3, 4, 5]
+                      description: |-
+                        Hanya untuk **recurrence** = **3** (Bulanan).
+                        - 1 = First week
+                        - 2 = Second week
+                        - 3 = Third week
+                        - 4 = Fourth week
+                        - 5 = Last week
+                    end_type:
+                      type: string
+                      enum: [end_date, end_after_type]
+                      description: "Cara berhenti: berdasarkan tanggal atau jumlah pengulangan."
+                    end_date:
+                      type: string
+                      format: date
+                      description: "Wajib jika **end_type** = **end_date**."
+                    end_after_type:
+                      type: integer
+                      description: "Wajib jika **end_type** = **end_after_type** (jumlah pengulangan)."
+                    is_meeting_registration:
+                      type: boolean
+                      default: false
+                      description: Apakah membutuhkan registrasi peserta.
+                    is_meeting_qna:
+                      type: boolean
+                      default: false
+                      description: Mengatur aktif tidaknya fitur QnA di dalam ruang Zoom.
+                    is_language_interpretation:
+                      type: boolean
+                      default: false
+                      description: Aktifkan fitur juru bahasa (language interpretation).
+                    is_mute_participant_upon_entry:
+                      type: boolean
+                      default: false
+                      description: Mute otomatis saat peserta masuk.
+                    is_req_permission_to_unmute_participants:
+                      type: boolean
+                      default: false
+                      description: Peserta membutuhkan izin host untuk melakukan unmute.
+            examples:
+              oneTime:
+                summary: One-time Schedule
+                value:
+                  product_id: 1
+                  topic: "One-time Schedule"
+                  passcode: "987654"
+                  start_date: "2025-08-29"
+                  start_time: "20:00"
+                  recurring: false
+                  is_meeting_registration: false
+                  is_meeting_qna: false
+                  is_language_interpretation: false
+                  is_mute_participant_upon_entry: false
+                  is_req_permission_to_unmute_participants: false
+              recurringDailyEndDate:
+                summary: Recurring Daily - End on Date
+                value:
+                  product_id: 4
+                  topic: "Recurring Schedule"
+                  passcode: "123456"
+                  start_date: "2025-08-22"
+                  start_time: "20:00"
+                  recurring: true
+                  recurrence: 1
+                  repeat_interval: 1
+                  end_type: "end_date"
+                  end_date: "2025-08-24"
+                  is_meeting_registration: false
+                  is_meeting_qna: false
+                  is_language_interpretation: false
+                  is_mute_participant_upon_entry: false
+                  is_req_permission_to_unmute_participants: false
+              recurringWeeklyCount:
+                summary: Recurring Weekly - End After Count
+                value:
+                  product_id: 3
+                  topic: "Recurring Weekly"
+                  passcode: "987654"
+                  start_date: "2025-08-22"
+                  start_time: "09:00"
+                  recurring: true
+                  recurrence: 2
+                  repeat_interval: 1
+                  weekly_days: [6, 7]
+                  end_type: "end_after_type"
+                  end_after_type: 4
+              recurringMonthlyCount:
+                summary: Recurring Monthly - End After Count
+                value:
+                  product_id: 2
+                  topic: "Recurring Monthly"
+                  passcode: "ABC123"
+                  start_date: "2025-08-26"
+                  start_time: "15:00"
+                  recurring: true
+                  recurrence: 3
+                  repeat_interval: 1
+                  monthly_day: 26
+                  end_type: "end_after_type"
+                  end_after_type: 6
+      responses:
+        '201':
+          description: Schedule created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleSuccessResponse"
+              examples:
+                oneTimeResponse:
+                  summary: One-time response
+                  value:
+                    response:
+                      status: "success"
+                      status_code: 201
+                      message: "Schedule created successfully"
+                    data:
+                      id: 49
+                      topic: "One-time Schedule"
+                      passcode: "987654"
+                      recurring: false
+                      start_date: "2025-08-22"
+                      start_time: "20:00:00"
+                      meeting_id: 83803081288
+                      occurence_id: null
+                      join_url: "https://us06web.zoom.us/j/83803081288?pwd=xHUmuXNnCcp6uhblE75U9w52i1IYEs.1"
+                      registration_url: null
+                      waiting_room: 1
+                      is_meeting_registration: false
+                      is_meeting_qna: false
+                      is_language_interpretation: false
+                      is_mute_participant_upon_entry: false
+                      is_req_permission_to_unmute_participants: false
+                      editable: true
+                      is_used: false
+                      total_recurring: 0
+                      custom_live_streaming:
+                        stream_url: null
+                        stream_key: null
+                        live_stream_page_url: null
+                      created_at: "2025-08-21T12:35:38.000000Z"
+                      updated_at: "2025-08-21T12:35:38.000000Z"
+                      product:
+                        id: 4
+                        name: "Meeting 1000 Participants"
+                        capacity: 1000
+                      account:
+                        id: 16
+                        name: "Space 4"
+                      recurring_data:
+                        total_recurring: 0
+                        recurrence: null
+                        repeat_interval: null
+                        monthly_day: null
+                        monthly_week: null
+                        weekly_days: null
+                        end_date: null
+                        end_after_type: null
+                recurringResponse:
+                  summary: Recurring (monthly, count)
+                  value:
+                    response:
+                      status: "success"
+                      status_code: 201
+                      message: "Schedule created successfully"
+                    data:
+                      id: 93
+                      topic: "Recurring Monthly"
+                      passcode: "ABC123"
+                      recurring: true
+                      start_date: "2025-08-25"
+                      start_time: "15:00:00"
+                      meeting_id: 84727876665
+                      occurence_id: "1756108800000"
+                      join_url: "https://us06web.zoom.us/j/84727876665?pwd=7E40zfIlAQU5mzvp5PbZbEz2KbfbdR.1"
+                      registration_url: null
+                      waiting_room: 1
+                      is_meeting_registration: false
+                      is_meeting_qna: false
+                      is_language_interpretation: false
+                      is_mute_participant_upon_entry: true
+                      is_req_permission_to_unmute_participants: false
+                      editable: true
+                      is_used: false
+                      total_recurring: 6
+                      custom_live_streaming:
+                        stream_url: null
+                        stream_key: null
+                        live_stream_page_url: null
+                      created_at: "2025-08-22T09:05:53.000000Z"
+                      updated_at: "2025-08-22T09:05:54.000000Z"
+                      product:
+                        id: 2
+                        name: "Meeting 300 Participants"
+                        capacity: 300
+                      account:
+                        id: 14
+                        name: "Space 16"
+                      recurring_data:
+                        total_recurring: 6
+                        recurrence: 3
+                        repeat_interval: 1
+                        monthly_day: null
+                        monthly_week: null
+                        weekly_days: null
+                        end_date: null
+                        end_after_type: 6
+                      occurrences:
+                        - id: 98
+                          occurence_id: "1769328000000"
+                          start_date: "2026-01-25"
+                          start_time: "15:00:00"
+                          waiting_room: 1
+                          editable: true
+                          is_used: false
+                        - id: 97
+                          occurence_id: "1766649600000"
+                          start_date: "2025-12-25"
+                          start_time: "15:00:00"
+                          waiting_room: 1
+                          editable: true
+                          is_used: false
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized (token tidak valid)
+        '422':
+          description: Unprocessable Entity (kombinasi parameter tidak valid)
+
+  /schedules/{meeting_id}:
+    delete:
+      summary: Delete Schedule
+      description: |-
+        Hapus jadwal meeting Zoom.
+        - Untuk jadwal **non-recurring**, cukup kirim `meeting_id` (menghapus seluruh jadwal).
+        - Untuk jadwal **recurring**, sertakan query **occurrence_id** untuk menghapus salah satu occurrence.
+          Nilai `occurrence_id` merujuk ke `data.occurrences[].occurence_id` pada response pembuatan jadwal.
+      tags: [Schedules]
+      parameters:
+        - in: path
+          name: meeting_id
+          required: true
+          schema:
+            type: integer
+          description: Meeting ID dari sebuah jadwal.
+        - in: query
+          name: occurrence_id
+          required: false
+          schema:
+            type: string
+          description: |-
+            Hanya untuk jadwal **recurring**. Isi dengan ID occurrence yang ingin dihapus.
+            Catatan: pada response jadwal nama field dieja `occurence_id`.
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Accept
+          required: false
+          schema:
+            type: string
+            example: application/json
+      responses:
+        '200':
+          description: Schedule deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+              example:
+                response:
+                  status: success
+                  status_code: 200
+                  message: Schedule deleted successfully
+        '400':
+          description: Bad request (parameter tidak valid)
+        '401':
+          description: Unauthorized (token tidak valid)
+        '404':
+          description: Jadwal/occurrence tidak ditemukan
+        '422':
+          description: Unprocessable Entity (kombinasi parameter tidak valid)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ScheduleSuccessResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            status_code:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Schedule created successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: ID jadwal
+            topic:
+              type: string
+            passcode:
+              type: string
+            recurring:
+              type: boolean
+            start_date:
+              type: string
+              format: date
+            start_time:
+              type: string
+            meeting_id:
+              type: integer
+            occurence_id:
+              type: string
+              nullable: true
+              description: ID pengulangan jika menggunakan recurring
+            join_url:
+              type: string
+              description: URL untuk bergabung/masuk ke ruang Zoom
+            registration_url:
+              type: string
+              nullable: true
+              description: Jika registrasi diaktifkan, URL pendaftaran peserta
+            waiting_room:
+              type: integer
+              description: Status ruang tunggu (1 = ditutup, 0 = dibuka)
+            is_meeting_registration:
+              type: boolean
+            is_meeting_qna:
+              type: boolean
+            is_language_interpretation:
+              type: boolean
+            is_mute_participant_upon_entry:
+              type: boolean
+            is_req_permission_to_unmute_participants:
+              type: boolean
+            editable:
+              type: boolean
+              description: Apakah jadwal bisa diubah tanggal/jam-nya. Jika sudah digunakan, tidak bisa diubah.
+            is_used:
+              type: boolean
+              description: Apakah ruang Zoom pernah digunakan
+            total_recurring:
+              type: integer
+              description: Jumlah total kemunculan (recurring) yang dibuat
+            custom_live_streaming:
+              type: object
+              properties:
+                stream_url: { type: string, nullable: true }
+                stream_key: { type: string, nullable: true }
+                live_stream_page_url: { type: string, nullable: true }
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            product:
+              type: object
+              properties:
+                id: { type: integer }
+                name: { type: string }
+                capacity: { type: integer }
+            account:
+              type: object
+              properties:
+                id: { type: integer }
+                name: { type: string }
+            recurring_data:
+              type: object
+              description: Rincian pengulangan (jika recurring).
+              properties:
+                total_recurring:
+                  type: integer
+                  nullable: true
+                  description: Jumlah recurring yang dibuat
+                recurrence:
+                  type: integer
+                  nullable: true
+                repeat_interval:
+                  type: integer
+                  nullable: true
+                monthly_day:
+                  type: integer
+                  nullable: true
+                monthly_week:
+                  type: integer
+                  nullable: true
+                weekly_days:
+                  type: array
+                  items: { type: integer }
+                  nullable: true
+                end_date:
+                  type: string
+                  format: date
+                  nullable: true
+                end_after_type:
+                  type: integer
+                  nullable: true
+            occurrences:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: integer }
+                  occurence_id:
+                    type: string
+                    description: ID pengulangan jika menggunakan recurring
+                  start_date: { type: string, format: date }
+                  start_time: { type: string }
+                  waiting_room: { type: integer }
+                  editable: { type: boolean }
+                  is_used: { type: boolean }
+
+    StandardResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            status_code:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Schedule deleted successfully
