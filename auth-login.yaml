@@ -13,12 +13,7 @@ paths:
         Untuk mengakses semua endpoint dalam API Rapatin, pengguna harus melakukan
         autentikasi terlebih dahulu menggunakan token. Token yang diterima harus
         digunakan di setiap request API berikutnya dengan menambahkannya ke header:
-        `Authorization: Bearer {token}`
-
-        Catatan:
-        - Token bersifat pribadi. Jangan dibagikan ke publik.
-        - Masa aktif token mengikuti konfigurasi internal sistem.
-        - Jika token kedaluwarsa, pengguna harus login kembali.
+        `Authorization: Bearer {token}`.
       tags:
         - Authentication
       requestBody:
