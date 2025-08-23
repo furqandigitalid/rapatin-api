@@ -24,7 +24,7 @@ paths:
           `monthly_day` atau `monthly_week`.
         - Jika `end_type` = `end_date`: sertakan `end_date`.
         - Jika `end_type` = `end_after_type`: sertakan `end_after_type`.
-      tags: [Create Schedules]
+      tags: [Schedules]
       parameters:
         - in: header
           name: Content-Type
