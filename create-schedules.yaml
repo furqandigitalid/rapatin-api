@@ -2,20 +2,13 @@ openapi: 3.0.0
 info:
   title: Schedules
   version: 1.0.0
-  description: >
-    Endpoint untuk membuat jadwal meeting Zoom melalui Rapatin.
-
+  description: Spesifikasi untuk endpoint schedules pada API Rapatin.
 servers:
   - url: https://api.rapatin.id
-
-tags:
-  - name: Schedules
-    description: Operasi untuk pembuatan jadwal meeting
-
 paths:
   /schedules:
     post:
-      summary: Create a Schedule
+      summary: Membuat Jadwal Rapat
       description: >
         Buat jadwal meeting baru. Gunakan Bearer Token pada setiap request:
         `Authorization: Bearer {token}`.
