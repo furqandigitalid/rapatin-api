@@ -7,7 +7,7 @@ servers:
   - url: https://api.rapatin.id
 
 paths:
-  /schedules/{meeting_id}?occurrence_id={occurrence_id}:
+  /schedules/{meeting_id}:
     get:
       tags: [Show Schedule]
       summary: Melihat Detil Jadwal Rapat
