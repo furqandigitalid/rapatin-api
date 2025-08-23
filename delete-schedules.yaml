@@ -10,7 +10,7 @@ paths:
   /schedules/{meeting_id}:
     delete:
       tags: [Delete Schedule]
-      summary: Delete Schedule
+      summary: Menghapus Jadwal Rapat
       description: |-
         Hapus jadwal meeting Zoom.
 
@@ -18,6 +18,18 @@ paths:
         - Untuk jadwal **recurring**, sertakan query `occurrence_id` untuk menghapus salah satu occurrence.
           Nilai `occurrence_id` merujuk ke `data.occurrences[].occurence_id` pada response pembuatan jadwal.
       parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
         - in: path
           name: meeting_id
           required: true
@@ -32,18 +44,6 @@ paths:
             type: string
             example: "1756108800000"
           description: Hanya untuk jadwal recurring — ID occurrence yang akan dihapus.
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: "Bearer {token}"
-        - in: header
-          name: Accept
-          required: true
-          schema:
-            type: string
-            example: application/json
 
       # Contoh request
       x-codeSamples:
