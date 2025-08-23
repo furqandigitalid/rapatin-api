@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: Authentication
+  version: 1.0.0
+  description: Spesifikasi untuk endpoint autentikasi (login) pada API Rapatin.
+servers:
+- url: https://api.rapatin.id
+paths:
+  /auth/login:
+    post:
+      summary: Login untuk Mendapatkan Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Alamat email akun pengguna Rapatin
+                password:
+                  type: string
+                  description: Password akun Rapatin
+                device:
+                  type: string
+                  description: 'Nama perangkat atau aplikasi (contoh: ''postman'')'
+              required:
+              - email
+              - password
+              - device
+      parameters:
+      - in: header
+        name: Content-Type
+        required: true
+        schema:
+          type: string
+          example: application/json
+      - in: header
+        name: Accept
+        required: true
+        schema:
+          type: string
+          example: application/json
+      responses:
+        '200':
+          description: Token berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: success
+                        description: Status hasil request
+                      status_code:
+                        type: integer
+                        example: 200
+                        description: Kode HTTP response
+                      message:
+                        type: string
+                        example: Token generated successfully
+                        description: Pesan keberhasilan
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: Token autentikasi JWT
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            description: ID unik pengguna
+                          name:
+                            type: string
+                            description: Nama lengkap pengguna
+                          email:
+                            type: string
+                            format: email
+                            description: Email pengguna
+                          phone:
+                            type: string
+                            description: Nomor telepon pengguna
+                          address:
+                            type: string
+                            description: Alamat pengguna
+                          role:
+                            type: integer
+                            description: Peran/role ID pengguna
+                          emailVerified:
+                            type: boolean
+                            description: Status verifikasi email
+                          ordersCount:
+                            type: integer
+                            description: Jumlah total pemesanan/meeting
+                          createdAt:
+                            type: string
+                            format: date-time
+                            description: Tanggal registrasi akun
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            description: Tanggal terakhir perubahan data
+              example:
+                response:
+                  status: success
+                  status_code: 200
+                  message: Token generated successfully
+                data:
+                  token: 13|bPC5YoBuiovI6GmI7SFo8rsdqAK7ecISA5WGxADwfd4cca67
+                  user:
+                    id: 5
+                    name: Account Name
+                    email: useremail@mail.com
+                    phone: 088122445566
+                    address: Account address here
+                    role: 7
+                    emailVerified: true
+                    ordersCount: 6
+                    createdAt: '2025-08-05T00:56:29.000000Z'
+                    updatedAt: '2025-08-19T04:35:04.000000Z'
