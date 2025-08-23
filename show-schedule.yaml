@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: Show Schedule
+  version: 1.0.0
+  description: Spesifikasi untuk menampilkan detail jadwal rapat pada API Rapatin.
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /schedules/{meeting_id}:
+    get:
+      tags: [Show Schedule]
+      summary: Melihat Detail Jadwal Rapat
+      description: |-
+        Ambil detail jadwal rapat Zoom.
+
+        - Untuk jadwal **non-recurring**, kirim **`meeting_id`** saja.
+        - Untuk jadwal **recurring**:
+          - **Tanpa `occurrence_id`** → kembalikan detail jadwal (beserta informasi pengulangan/occurrences jika tersedia).
+          - **Dengan `occurrence_id`** → targetkan salah satu occurrence tertentu.
+            Nilai `occurrence_id` merujuk ke `data.occurrences[].occurence_id` dari response pembuatan jadwal.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: path
+          name: meeting_id
+          required: true
+          schema:
+            type: string
+            example: "81911244410"
+          description: Meeting ID dari sebuah jadwal.
+        - in: query
+          name: occurrence_id
+          required: false
+          schema:
+            type: string
+            example: "1756108800000"
+          description: Opsional. Sertakan untuk menargetkan satu occurrence pada jadwal recurring.
+
+      x-codeSamples:
+        - lang: cURL
+          label: Non-recurring (tanpa occurrence_id)
+          source: |
+            curl -L \
+              --request GET \
+              --url 'https://api.rapatin.id/schedules/81911244410' \
+              --header 'Authorization: Bearer {token}' \
+              --header 'Accept: application/json'
+        - lang: cURL
+          label: Recurring (dengan occurrence_id)
+          source: |
+            curl -L \
+              --request GET \
+              --url 'https://api.rapatin.id/schedules/84727876665?occurrence_id=1756108800000' \
+              --header 'Authorization: Bearer {token}' \
+              --header 'Accept: application/json'
+
+      responses:
+        '200':
+          description: Schedule fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleDetailsResponse"
+              examples:
+                nonRecurring:
+                  summary: Non-recurring schedule
+                  value:
+                    response:
+                      status: success
+                      status_code: 200
+                      message: Schedule fetched successfully
+                    data:
+                      id: 110
+                      topic: "Weekly Team Sync"
+                      passcode: "123456"
+                      recurring: false
+                      start_date: "2025-08-24"
+                      start_time: "14:00:00"
+                      meeting_id: "81911244410"
+                      occurence_id: null
+                      join_url: "https://us06web.zoom.us/j/81911244410?pwd=egGYk70ab8DqOGfaGVRdQaAvfEXLSo.1"
+                      registration_url: null
+                      waiting_room: 1
+                      is_meeting_registration: false
+                      is_meeting_qna: false
+                      is_language_interpretation: false
+                      is_mute_participant_upon_entry: true
+                      is_req_permission_to_unmute_participants: false
+                      editable: true
+                      is_used: false
+                      total_recurring: 0
+                      custom_live_streaming:
+                        stream_url: null
+                        stream_key: null
+                        live_stream_page_url: null
+                      created_at: "2025-08-22T01:36:06.000000Z"
+                      updated_at: "2025-08-22T01:36:06.000000Z"
+                      product:
+                        id: 1
+                        name: "Meeting 100 Participants"
+                        capacity: 100
+                      account:
+                        id: 13
+                        name: "Space 11"
+                      recurring_data:
+                        total_recurring: 0
+                        recurrence: null
+                        repeat_interval: null
+                        monthly_day: null
+                        monthly_week: null
+                        weekly_days: null
+                        end_type: null
+                        end_date: null
+                        end_after_type: null
+                recurringSeries:
+                  summary: Recurring schedule (series + occurrences)
+                  value:
+                    response:
+                      status: success
+                      status_code: 200
+                      message: Schedule fetched successfully
+                    data:
+                      id: 93
+                      topic: "Recurring Monthly"
+                      passcode: "ABC123"
+                      recurring: true
+                      start_date: "2025-08-25"
+                      start_time: "15:00:00"
+                      meeting_id: 84727876665
+                      occurence_id: "1756108800000"
+                      join_url: "https://us06web.zoom.us/j/84727876665?pwd=7E40zfIlAQU5mzvp5PbZbEz2KbfbdR.1"
+                      reg
