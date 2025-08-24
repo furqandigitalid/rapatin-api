@@ -14,21 +14,25 @@ paths:
       description: |-
         Perbarui jadwal meeting Zoom.
 
-        - **Tanpa `occurrence_id`** → memperbarui **seluruh jadwal**:
+        - Tanpa `occurrence_id` (query) → memperbarui seluruh jadwal:
           - Non-recurring: update jadwal tunggal.
-          - Recurring: update **seri** (semua occurrence kedepan sesuai kebijakan sistem).
-        - **Dengan `occurrence_id` (query)** → memperbarui **satu occurrence** pada jadwal recurring.
+          - Recurring: update seri (semua occurrence ke depan sesuai kebijakan sistem).
+        - Dengan `occurrence_id` (query) → memperbarui **satu occurrence** pada jadwal recurring.
+          - Saat mengirim `occurrence_id`, bidang pola recurring (`recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`) akan **diabaikan**.
 
-        **Catatan pengisian `recurring`:**
+        **Batasan update (di-validasi server):**
+        - **Tidak dapat diubah:** `product_id`, `meeting_id`, `account_id`.
+        - `start_date` & `start_time` **tidak dapat diubah** jika `is_used = 1` **atau** tanggal jadwal telah berlalu.
+        - PUT bersifat **partial update**: field yang tidak dikirim **tidak diubah**.
+
+        **Petunjuk pengisian `recurring`:**
         - Jika `recurring` = **false** → gunakan skema *One-time* (tanpa bidang pengulangan).
-        - Jika `recurring` = **true** → *WAJIB* isi `recurrence` (1=Harian, 2=Mingguan, 3=Bulanan), `repeat_interval`, dan `end_type` (`end_date` atau `end_after_type`).
+        - Jika `recurring` = **true** → *WAJIB*: `recurrence` (1=Harian, 2=Mingguan, 3=Bulanan), `repeat_interval`, dan `end_type` (`end_date` atau `end_after_type`).
         - Kondisional:
           - `recurrence=2 (Mingguan)` → sertakan `weekly_days`.
           - `recurrence=3 (Bulanan)` → pilih **satu**: `monthly_day` **atau** `monthly_week`.
           - `end_type=end_date` → sertakan `end_date`.
           - `end_type=end_after_type` → sertakan `end_after_type`.
-
-        > PUT ini bersifat **partial update**: field yang tidak dikirim **tidak diubah**.
       parameters:
         - in: path
           name: meeting_id
@@ -86,7 +90,6 @@ paths:
                 summary: Ubah satu occurrence (gunakan query occurrence_id)
                 value:
                   recurring: true
-                  # boleh hanya ubah jam/tanggal occurrence tsb
                   start_date: "2025-08-27"
                   start_time: "10:00"
 
@@ -210,7 +213,7 @@ paths:
                         repeat_interval: 1
                         monthly_day: null
                         monthly_week: null
-                        weekly_days: [3]  # contoh nilai seri
+                        weekly_days: [3]
                         end_type: end_date
                         end_date: "2025-09-30"
                         end_after_type: null
@@ -219,7 +222,7 @@ paths:
         '401':
           description: Unauthorized (token tidak valid)
         '422':
-          description: Unprocessable Entity (kombinasi parameter tidak valid)
+          description: Unprocessable Entity (kombinasi parameter tidak valid / melanggar batasan update)
 
 components:
   securitySchemes:
@@ -228,19 +231,11 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
-  # ---------- REQUEST SCHEMAS ----------
   schemas:
+    # ---------- REQUEST SCHEMAS ----------
     CommonUpdateFields:
       type: object
       properties:
-        product_id:
-          type: integer
-          description: |-
-            ID produk untuk kapasitas peserta:
-            - 1 = 100 peserta
-            - 2 = 300 peserta
-            - 3 = 500 peserta
-            - 4 = 1000 peserta
         topic:
           type: string
           maxLength: 200
@@ -252,10 +247,14 @@ components:
         start_date:
           type: string
           format: date
-          description: Tanggal pelaksanaan (YYYY-MM-DD).
+          description: >-
+            Tanggal pelaksanaan (YYYY-MM-DD).
+            *Tidak dapat diubah jika* `is_used = 1` *atau* tanggal sudah berlalu.
         start_time:
           type: string
-          description: Jam pelaksanaan (format 24 jam, HH:MM).
+          description: >-
+            Jam pelaksanaan (format 24 jam, HH:MM).
+            *Tidak dapat diubah jika* `is_used = 1` *atau* tanggal sudah berlalu.
         is_meeting_registration:
           type: boolean
           description: Apakah membutuhkan registrasi peserta.
@@ -271,6 +270,9 @@ components:
         is_req_permission_to_unmute_participants:
           type: boolean
           description: Peserta membutuhkan izin host untuk melakukan unmute.
+      description: >-
+        **Catatan:** `product_id`, `meeting_id`, dan `account_id` tidak dapat
+        diubah melalui endpoint ini (dibatasi oleh server).
 
     UpdateOneTimeScheduleRequest:
       allOf:
@@ -351,7 +353,7 @@ components:
             - repeat_interval
             - end_type
 
-  # ---------- RESPONSE SCHEMAS ----------
+    # ---------- RESPONSE SCHEMAS ----------
     ScheduleUpdateSuccessResponse:
       type: object
       properties:
@@ -364,7 +366,7 @@ components:
         data:
           $ref: "#/components/schemas/ScheduleItemFull"
 
-    # Reuse struktur detail jadwal penuh (sama seperti pada create/show)
+    # Struktur detail jadwal penuh
     ScheduleItemFull:
       type: object
       properties:
