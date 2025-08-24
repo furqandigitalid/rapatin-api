@@ -1,0 +1,301 @@
+openapi: 3.0.0
+info:
+  title: List Schedules
+  version: 1.0.0
+  description: Spesifikasi untuk mengambil daftar jadwal rapat pada API Rapatin.
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /schedules:
+    get:
+      tags: [List Schedules]
+      summary: Memuat Daftar Jadwal yang Dimiliki
+      description: |-
+        Ambil daftar jadwal meeting Zoom (dengan dukungan filter).
+
+        **Filter yang tersedia**
+        - `tab`: `previous` | `upcoming` | `all`
+        - `from`, `to`: rentang tanggal (format `YYYY-MM-DD`)
+        - `recurring`: `1` (recurring) atau `0` (non-recurring)
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: query
+          name: tab
+          required: false
+          schema:
+            type: string
+            enum: [previous, upcoming, all]
+            default: upcoming
+          description: Tab filter daftar jadwal.
+        - in: query
+          name: from
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "2025-08-24"
+          description: Tanggal mulai (YYYY-MM-DD).
+        - in: query
+          name: to
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "2025-09-30"
+          description: Tanggal akhir (YYYY-MM-DD).
+        - in: query
+          name: recurring
+          required: false
+          schema:
+            type: integer
+            enum: [0, 1]
+            example: 1
+          description: Filter recurring (`1`) atau non-recurring (`0`).
+
+      x-codeSamples:
+        - lang: cURL
+          label: Upcoming (semua)
+          source: |
+            curl -L \
+              --request GET \
+              --url 'https://api.rapatin.id/schedules?tab=upcoming' \
+              --header 'Authorization: Bearer {token}' \
+              --header 'Accept: application/json'
+        - lang: cURL
+          label: Filter by date range & recurring
+          source: |
+            curl -L \
+              --request GET \
+              --url 'https://api.rapatin.id/schedules?tab=all&from=2025-08-24&to=2025-09-30&recurring=1' \
+              --header 'Authorization: Bearer {token}' \
+              --header 'Accept: application/json'
+
+      responses:
+        '200':
+          description: Schedules retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSchedulesResponse"
+              examples:
+                minimalTwoItems:
+                  summary: 1 non-recurring + 1 recurring
+                  value:
+                    response:
+                      status: success
+                      status_code: 200
+                      message: Schedules retrieved successfully
+                    data:
+                      items:
+                        - id: 110
+                          topic: "Weekly Team Sync"
+                          passcode: "123456"
+                          recurring: false
+                          start_date: "2025-08-24"
+                          start_time: "14:00:00"
+                          meeting_id: "81911244410"
+                          occurence_id: null
+                          join_url: "https://us06web.zoom.us/j/81911244410?pwd=egGYk70ab8DqOGfaGVRdQaAvfEXLSo.1"
+                          registration_url: null
+                          waiting_room: 1
+                          is_meeting_registration: false
+                          is_meeting_qna: false
+                          is_language_interpretation: false
+                          is_mute_participant_upon_entry: true
+                          is_req_permission_to_unmute_participants: false
+                          editable: true
+                          is_used: false
+                          custom_live_streaming:
+                            stream_url: null
+                            stream_key: null
+                            live_stream_page_url: null
+                          created_at: "2025-08-22T01:36:06.000000Z"
+                          updated_at: "2025-08-22T01:36:06.000000Z"
+                          product: { id: 1, name: "Meeting 100 Participants", capacity: 100 }
+                          account: { id: 13, name: "Space 11" }
+                          recurring_data:
+                            total_recurring: 0
+                            recurrence: null
+                            repeat_interval: null
+                            monthly_day: null
+                            monthly_week: null
+                            weekly_days: null
+                            end_type: null
+                            end_date: null
+                            end_after_type: null
+                        - id: 111
+                          topic: "Weekly Sales Meeting"
+                          passcode: "987654"
+                          recurring: true
+                          start_date: "2025-08-24"
+                          start_time: "09:00:00"
+                          meeting_id: "89757997072"
+                          occurence_id: "1756087200000"
+                          join_url: "https://us06web.zoom.us/j/89757997072?pwd=dn3pRowl1qui6oD5gJtWFyegQAbyOZ.1"
+                          registration_url: "https://us06web.zoom.us/meeting/register/u8mRMk3WTcCKwa81Gqvlqg"
+                          waiting_room: 1
+                          is_meeting_registration: true
+                          is_meeting_qna: true
+                          is_language_interpretation: false
+                          is_mute_participant_upon_entry: false
+                          is_req_permission_to_unmute_participants: true
+                          editable: true
+                          is_used: false
+                          custom_live_streaming:
+                            stream_url: null
+                            stream_key: null
+                            live_stream_page_url: null
+                          created_at: "2025-08-22T01:37:01.000000Z"
+                          updated_at: "2025-08-22T01:37:01.000000Z"
+                          product: { id: 1, name: "Meeting 100 Participants", capacity: 100 }
+                          account: { id: 13, name: "Space 11" }
+                          recurring_data:
+                            total_recurring: 11
+                            recurrence: 2
+                            repeat_interval: 1
+                            monthly_day: null
+                            monthly_week: null
+                            weekly_days: null
+                            end_type: null
+                            end_date: "2025-09-30"
+                            end_after_type: null
+                          occurrences:
+                            - id: 112
+                              occurence_id: "1756260000000"
+                              start_date: "2025-08-27"
+                              start_time: "09:00:00"
+                              waiting_room: 1
+                              editable: true
+                              is_used: false
+                            - id: 113
+                              occurence_id: "1756692000000"
+                              start_date: "2025-09-01"
+                              start_time: "09:00:00"
+                              waiting_room: 1
+                              editable: true
+                              is_used: false
+                      meta:
+                        current_page: 1
+                        per_page: 15
+                        total: 2
+                        last_page: 1
+        '401':
+          description: Unauthorized (token tidak valid)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ListSchedulesResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status: { type: string, example: success }
+            status_code: { type: integer, example: 200 }
+            message: { type: string, example: Schedules retrieved successfully }
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/ScheduleListItem"
+            meta:
+              type: object
+              properties:
+                current_page: { type: integer, example: 1 }
+                per_page: { type: integer, example: 15 }
+                total: { type: integer, example: 2 }
+                last_page: { type: integer, example: 1 }
+
+    ScheduleListItem:
+      type: object
+      description: Item jadwal pada hasil pencarian/daftar.
+      properties:
+        id: { type: integer, description: ID internal jadwal. }
+        topic: { type: string, description: Judul/topik meeting. }
+        passcode: { type: string, description: Kode sandi rapat. }
+        recurring: { type: boolean, description: Apakah jadwal berulang. }
+        start_date: { type: string, format: date, description: Tanggal (YYYY-MM-DD). }
+        start_time: { type: string, description: Jam (HH:MM:SS). }
+        meeting_id: { type: string, description: Zoom Meeting ID. }
+        occurence_id:
+          type: string
+          nullable: true
+          description: ID occurrence (untuk jadwal recurring).
+        join_url: { type: string }
+        registration_url: { type: string, nullable: true }
+        waiting_room: { type: integer, description: Status ruang tunggu (1=aktif, 0=nonaktif). }
+        is_meeting_registration: { type: boolean }
+        is_meeting_qna: { type: boolean }
+        is_language_interpretation: { type: boolean }
+        is_mute_participant_upon_entry: { type: boolean }
+        is_req_permission_to_unmute_participants: { type: boolean }
+        editable: { type: boolean }
+        is_used: { type: boolean }
+        custom_live_streaming:
+          type: object
+          properties:
+            stream_url: { type: string, nullable: true }
+            stream_key: { type: string, nullable: true }
+            live_stream_page_url: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        product:
+          type: object
+          properties:
+            id: { type: integer }
+            name: { type: string }
+            capacity: { type: integer }
+        account:
+          type: object
+          properties:
+            id: { type: integer }
+            name: { type: string }
+        recurring_data:
+          type: object
+          description: Rincian pengulangan (jika recurring).
+          properties:
+            total_recurring: { type: integer, nullable: true }
+            recurrence: { type: integer, nullable: true }
+            repeat_interval: { type: integer, nullable: true }
+            monthly_day: { type: integer, nullable: true }
+            monthly_week: { type: integer, nullable: true }
+            weekly_days:
+              type: array
+              items: { type: integer }
+              nullable: true
+            end_type: { type: string, nullable: true }
+            end_date: { type: string, format: date, nullable: true }
+            end_after_type: { type: integer, nullable: true }
+        occurrences:
+          type: array
+          description: Daftar occurrence (opsional, untuk jadwal recurring).
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              occurence_id: { type: string }
+              start_date: { type: string, format: date }
+              start_time: { type: string }
+              waiting_room: { type: integer }
+              editable: { type: boolean }
+              is_used: { type: boolean }
