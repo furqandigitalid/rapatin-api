@@ -10,7 +10,7 @@ paths:
   /schedules/{meeting_id}:
     put:
       tags: [Update Schedule]
-      summary: Update Schedule
+      summary: Merubah Data Jadwal Rapat
       description: |-
         Perbarui jadwal meeting Zoom.
 
