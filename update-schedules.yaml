@@ -12,27 +12,26 @@ paths:
       tags: [Update Schedule]
       summary: Merubah Data Jadwal Rapat
       description: |-
-        Perbarui jadwal meeting Zoom.
-
-        - Tanpa `occurrence_id` (query) → memperbarui seluruh jadwal:
-          - Non-recurring: update jadwal tunggal.
-          - Recurring: update seri (semua occurrence ke depan sesuai kebijakan sistem).
-        - Dengan `occurrence_id` (query) → memperbarui **satu occurrence** pada jadwal recurring.
-          - Saat mengirim `occurrence_id`, bidang pola recurring (`recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`) akan **diabaikan**.
-
+        Perbarui jadwal meeting Zoom untuk One-time dan Recurring Schedule.
+        
         **Batasan update (di-validasi server):**
         - **Tidak dapat diubah:** `product_id`, `meeting_id`, `account_id`.
         - `start_date` & `start_time` **tidak dapat diubah** jika `is_used = 1` **atau** tanggal jadwal telah berlalu.
         - PUT bersifat **partial update**: field yang tidak dikirim **tidak diubah**.
-
-        **Petunjuk pengisian `recurring`:**
-        - Jika `recurring` = **false** → gunakan skema *One-time* (tanpa bidang pengulangan).
-        - Jika `recurring` = **true** → *WAJIB*: `recurrence` (1=Harian, 2=Mingguan, 3=Bulanan), `repeat_interval`, dan `end_type` (`end_date` atau `end_after_type`).
-        - Kondisional:
-          - `recurrence=2 (Mingguan)` → sertakan `weekly_days`.
-          - `recurrence=3 (Bulanan)` → pilih **satu**: `monthly_day` **atau** `monthly_week`.
-          - `end_type=end_date` → sertakan `end_date`.
-          - `end_type=end_after_type` → sertakan `end_after_type`.
+        
+        **Petunjuk saat memperbarui jadwal One-time (`recurring = false`):**
+        - Dapat diubah: `topic`, `start_date`, `start_time`, `passcode`, `is_meeting_registration`, `is_meeting_qna`, `is_language_interpretation`, `is_mute_participant_upon_entry`, `is_req_permission_to_unmute_participants`.
+        - Tidak dapat diubah: seluruh field pola recurring (`recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`).
+        
+        **Petunjuk saat memperbarui jadwal Recurring (`recurring = true`):**
+        - **Edit semua occurrence (seri)** — *tanpa* `occurrence_id`:
+          - **Tidak dapat mengubah pola pengulangan:** `recurring`, `recurrence` (1=Harian, 2=Mingguan, 3=Bulanan), `repeat_interval`, `end_type` (`end_date` atau `end_after_type`) beserta parameter kondisional (`weekly_days` untuk 2/Mingguan, atau salah satu dari `monthly_day`/`monthly_week` untuk 3/Bulanan).
+          - **Tidak dapat diubah:** `start_date` (terlepas dari status `is_used`—baik sudah dipakai maupun belum).
+          - Field lain seperti `topic`, `passcode`, pengaturan meeting (`is_*`) dan `start_time` bisa diubah **dengan mematuhi batasan umum**: ditolak jika `is_used = 1` atau tanggal occurrence yang dituju sudah berlalu.
+        - **Edit salah satu occurrence** — *dengan* query `occurrence_id`:
+          - **Hanya** `start_date` dan/atau `start_time` yang akan diproses.
+          - Seluruh field pola recurring (`recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`) **diabaikan**.
+          - Perubahan tetap tunduk pada batasan umum: ditolak jika occurrence tersebut `is_used = 1` atau tanggalnya sudah berlalu.
       parameters:
         - in: path
           name: meeting_id
@@ -70,24 +69,35 @@ paths:
                 - $ref: "#/components/schemas/UpdateOneTimeScheduleRequest"
                 - $ref: "#/components/schemas/UpdateRecurringScheduleRequest"
             examples:
-              updateOneTime:
-                summary: Ubah jadwal non-recurring (ubah jam & topik)
+              oneTime:
+                summary: One-time Schedule
+                description: Ubah jadwal non-recurring (mis. topik, tanggal, jam, dan opsi).
                 value:
                   recurring: false
                   topic: "Weekly Team Sync (reschedule)"
                   start_date: "2025-08-25"
                   start_time: "15:30"
-              updateSeriesRecurringWeekly:
-                summary: Ubah seri recurring mingguan (ubah hari & interval)
+                  passcode: "123456"
+                  is_meeting_registration: false
+                  is_meeting_qna: false
+                  is_language_interpretation: false
+                  is_mute_participant_upon_entry: true
+                  is_req_permission_to_unmute_participants: false
+              recurringAllOccurrences:
+                summary: Recurring — Edit All Occurrences (seri)
+                description: |
+                  Tanpa query `occurrence_id`. Tidak menyertakan field pola recurring.
+                  `start_date` tidak dapat diubah. Contoh mengubah jam dan pengaturan meeting untuk seluruh seri.
                 value:
                   recurring: true
-                  recurrence: 2
-                  repeat_interval: 1
-                  weekly_days: [2, 4]   # Monday & Wednesday
-                  end_type: end_date
-                  end_date: "2025-10-01"
-              updateSingleOccurrence:
-                summary: Ubah satu occurrence (gunakan query occurrence_id)
+                  topic: "Weekly Sales Meeting (rename)"
+                  start_time: "10:30"
+                  is_meeting_qna: true
+                  is_mute_participant_upon_entry: false
+              recurringThisOccurrence:
+                summary: Recurring — Edit This Occurrence (satu occurrence)
+                description: |
+                  Gunakan query `occurrence_id=...`. Hanya `start_date` dan/atau `start_time` yang diproses.
                 value:
                   recurring: true
                   start_date: "2025-08-27"
@@ -106,10 +116,26 @@ paths:
                 "recurring": false,
                 "topic": "Weekly Team Sync (reschedule)",
                 "start_date": "2025-08-25",
-                "start_time": "15:30"
+                "start_time": "15:30",
+                "is_mute_participant_upon_entry": true
               }'
         - lang: cURL
-          label: Update single occurrence (dengan occurrence_id)
+          label: Update recurring — all occurrences (tanpa occurrence_id)
+          source: |
+            curl -L \
+              --request PUT \
+              --url 'https://api.rapatin.id/schedules/89757997072' \
+              --header 'Authorization: Bearer {token}' \
+              --header 'Content-Type: application/json' \
+              --data '{
+                "recurring": true,
+                "topic": "Weekly Sales Meeting (rename)",
+                "start_time": "10:30",
+                "is_meeting_qna": true,
+                "is_mute_participant_upon_entry": false
+              }'
+        - lang: cURL
+          label: Update recurring — this occurrence (dengan occurrence_id)
           source: |
             curl -L \
               --request PUT \
@@ -118,6 +144,7 @@ paths:
               --header 'Content-Type: application/json' \
               --data '{
                 "recurring": true,
+                "start_date": "2025-08-27",
                 "start_time": "10:00"
               }'
 
