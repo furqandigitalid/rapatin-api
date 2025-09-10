@@ -64,22 +64,29 @@ paths:
               oneTime:
                 summary: One-time Schedule
                 value:
-                  recurring: false
                   topic: "Weekly Team Sync (reschedule)"
                   start_date: "2025-08-25"
                   start_time: "15:30"
+                  passcode: 12345
+                  is_meeting_registration: false
+                  is_meeting_qna: true
+                  is_language_interpretation: true
+                  is_mute_participant_upon_entry: true
+                  is_req_permission_to_unmute_participants: true
               recurringAll:
                 summary: Recurring (All Occurrences / Series)
                 value:
-                  recurring: true
                   topic: "Weekly Sales Meeting (rename)"
                   start_time: "10:30"
-                  is_meeting_registration: true
+                  passcode: 12345
+                  is_meeting_registration: false
+                  is_meeting_qna: true
+                  is_language_interpretation: true
                   is_mute_participant_upon_entry: true
+                  is_req_permission_to_unmute_participants: true
               recurringSingle:
                 summary: Recurring (Single Occurrence / This occurrence)
                 value:
-                  recurring: true
                   start_date: "2025-08-27"
                   start_time: "10:00"
 
@@ -218,12 +225,7 @@ components:
     UpdateOneTimeBody:
       title: One-time Schedule
       type: object
-      required: [recurring]
       properties:
-        recurring:
-          type: boolean
-          enum: [false]
-          description: Harus **false** untuk one-time schedule.
         topic:
           type: string
           maxLength: 200
@@ -256,14 +258,9 @@ components:
           description: Peserta membutuhkan izin host untuk melakukan unmute.
 
     UpdateRecurringAllOccurrencesBody:
-      title: Recurring Schedule — All Occurrences (Series)
+      title: All Occurrences (Series)
       type: object
-      required: [recurring]
       properties:
-        recurring:
-          type: boolean
-          enum: [true]
-          description: Harus **true** untuk recurring meeting (edit seri).
         topic:
           type: string
           maxLength: 200
@@ -280,19 +277,11 @@ components:
         is_language_interpretation: { type: boolean }
         is_mute_participant_upon_entry: { type: boolean }
         is_req_permission_to_unmute_participants: { type: boolean }
-      description: |-
-        **Catatan:** `start_date` **tidak dapat diubah** untuk edit seri. 
-        Seluruh field pola recurring (`recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`) tidak didukung pada update seri.
 
     UpdateSingleOccurrenceBody:
-      title: Recurring Schedule — Single Occurrence (This occurrence)
+      title: Single Occurrence (This occurrence)
       type: object
-      required: [recurring]
       properties:
-        recurring:
-          type: boolean
-          enum: [true]
-          description: Harus **true** untuk jadwal recurring (edit occurrence tunggal).
         start_date:
           type: string
           format: date
@@ -300,9 +289,6 @@ components:
         start_time:
           type: string
           description: "Jam occurrence (HH:MM)."
-      description: |-
-        **Gunakan query `occurrence_id`** pada URL. Hanya `start_date` dan/atau `start_time` yang diproses;
-        field pola recurring akan **diabaikan**.
 
     # ---------- RESPONSE SCHEMAS ----------
     ScheduleUpdateSuccessResponse:
