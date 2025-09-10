@@ -20,7 +20,7 @@ paths:
         - PUT bersifat **partial update**: field yang tidak dikirim **tidak diubah**.
         
         **Petunjuk saat memperbarui jadwal One-time (`recurring = false`):**
-        - Dapat diubah: `topic`, `start_date`, `start_time`, `passcode`, `is_meeting_registration`, `is_meeting_qna`, `is_language_interpretation`, `is_mute_participant_upon_entry`, `is_req_permission_to_unmute_participants`.
+        - Hanya dapat mengubah: `topic`, `start_date`, `start_time`, `passcode`, `is_meeting_registration`, `is_meeting_qna`, `is_language_interpretation`, `is_mute_participant_upon_entry`, `is_req_permission_to_unmute_participants`.
         - Tidak dapat diubah: seluruh field pola recurring (`recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`).
         
         **Petunjuk saat memperbarui jadwal Recurring (`recurring = true`):**
