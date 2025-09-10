@@ -9,56 +9,47 @@ servers:
 paths:
   /schedules/{meeting_id}:
     put:
-      tags: [Update Schedule]
       summary: Merubah Data Jadwal Rapat
       description: |-
         Perbarui jadwal meeting Zoom untuk One-time dan Recurring Schedule.
-        
-        **Batasan update (di-validasi server):**
+
+        **Batasan update (divalidasi server):**
         - **Tidak dapat diubah:** `product_id`, `meeting_id`, `account_id`.
         - `start_date` & `start_time` **tidak dapat diubah** jika `is_used = 1` **atau** tanggal jadwal telah berlalu.
         - PUT bersifat **partial update**: field yang tidak dikirim **tidak diubah**.
-        
+
         **Petunjuk saat memperbarui jadwal One-time (`recurring = false`):**
-        - Hanya dapat mengubah: `topic`, `start_date`, `start_time`, `passcode`, `is_meeting_registration`, `is_meeting_qna`, `is_language_interpretation`, `is_mute_participant_upon_entry`, `is_req_permission_to_unmute_participants`.
-        - Tidak dapat diubah: seluruh field pola recurring (`recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`).
-        
+        - Dapat diubah: `topic`, `start_date`, `start_time`, `passcode`, dan seluruh pengaturan `is_*`.
+
         **Petunjuk saat memperbarui jadwal Recurring (`recurring = true`):**
         - **Edit semua occurrence (seri)** — *tanpa* `occurrence_id`:
-          - **Tidak dapat mengubah pola pengulangan:** `recurring`, `recurrence` (1=Harian, 2=Mingguan, 3=Bulanan), `repeat_interval`, `end_type` (`end_date` atau `end_after_type`) beserta parameter kondisional (`weekly_days` untuk 2/Mingguan, atau salah satu dari `monthly_day`/`monthly_week` untuk 3/Bulanan).
-          - **Tidak dapat diubah:** `start_date` (terlepas dari status `is_used`—baik sudah dipakai maupun belum).
-          - Field lain seperti `topic`, `passcode`, pengaturan meeting (`is_*`) dan `start_time` bisa diubah **dengan mematuhi batasan umum**: ditolak jika `is_used = 1` atau tanggal occurrence yang dituju sudah berlalu.
+          - **Tidak dapat mengubah pola pengulangan:** `recurring`, `recurrence`, `repeat_interval`, `end_type`, `end_date`, `end_after_type`, `weekly_days`, `monthly_day`, `monthly_week`.
+          - **Tidak dapat diubah:** `start_date` (terlepas dari status `is_used`—sudah dipakai maupun belum).
+          - Dapat diubah: `topic`, `passcode`, `start_time`, dan seluruh pengaturan `is_*` **dengan mematuhi batasan umum** (ditolak jika occurrence yang terkena `is_used = 1` atau tanggalnya telah berlalu).
         - **Edit salah satu occurrence** — *dengan* query `occurrence_id`:
-          - **Hanya** `start_date` dan/atau `start_time` yang akan diproses.
-          - Seluruh field pola recurring (`recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`) **diabaikan**.
-          - Perubahan tetap tunduk pada batasan umum: ditolak jika occurrence tersebut `is_used = 1` atau tanggalnya sudah berlalu.
+          - **Hanya** `start_date` dan/atau `start_time` yang diproses.
+          - Seluruh field pola recurring diabaikan: `recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`.
+          - Tetap tunduk pada batasan umum (`is_used = 1` atau tanggal berlalu akan ditolak).
+      tags: [Update Schedule]
       parameters:
         - in: path
           name: meeting_id
           required: true
-          schema:
-            type: string
-            example: "89757997072"
+          schema: { type: string, example: "89757997072" }
           description: Zoom Meeting ID dari jadwal.
         - in: query
           name: occurrence_id
           required: false
-          schema:
-            type: string
-            example: "1756260000000"
+          schema: { type: string, example: "1756260000000" }
           description: ID occurrence untuk memperbarui **satu occurrence** pada jadwal recurring.
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: "Bearer {token}"
         - in: header
           name: Content-Type
           required: true
-          schema:
-            type: string
-            example: application/json
+          schema: { type: string, example: application/json }
+        - in: header
+          name: Authorization
+          required: true
+          schema: { type: string, example: "Bearer {token}" }
 
       requestBody:
         required: true
@@ -66,87 +57,31 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: "#/components/schemas/UpdateOneTimeScheduleRequest"
-                - $ref: "#/components/schemas/UpdateRecurringScheduleRequest"
+                - $ref: "#/components/schemas/UpdateOneTimeBody"
+                - $ref: "#/components/schemas/UpdateRecurringAllOccurrencesBody"
+                - $ref: "#/components/schemas/UpdateSingleOccurrenceBody"
             examples:
               oneTime:
                 summary: One-time Schedule
-                description: Ubah jadwal non-recurring (mis. topik, tanggal, jam, dan opsi).
                 value:
                   recurring: false
                   topic: "Weekly Team Sync (reschedule)"
                   start_date: "2025-08-25"
                   start_time: "15:30"
-                  passcode: "123456"
-                  is_meeting_registration: false
-                  is_meeting_qna: false
-                  is_language_interpretation: false
-                  is_mute_participant_upon_entry: true
-                  is_req_permission_to_unmute_participants: false
-              recurringAllOccurrences:
-                summary: Recurring — Edit All Occurrences (seri)
-                description: |
-                  Tanpa query `occurrence_id`. Tidak menyertakan field pola recurring.
-                  `start_date` tidak dapat diubah. Contoh mengubah jam dan pengaturan meeting untuk seluruh seri.
+              recurringAll:
+                summary: Recurring (All Occurrences / Series)
                 value:
                   recurring: true
                   topic: "Weekly Sales Meeting (rename)"
                   start_time: "10:30"
-                  is_meeting_qna: true
-                  is_mute_participant_upon_entry: false
-              recurringThisOccurrence:
-                summary: Recurring — Edit This Occurrence (satu occurrence)
-                description: |
-                  Gunakan query `occurrence_id=...`. Hanya `start_date` dan/atau `start_time` yang diproses.
+                  is_meeting_registration: true
+                  is_mute_participant_upon_entry: true
+              recurringSingle:
+                summary: Recurring (Single Occurrence / This occurrence)
                 value:
                   recurring: true
                   start_date: "2025-08-27"
                   start_time: "10:00"
-
-      x-codeSamples:
-        - lang: cURL
-          label: Update one-time (tanpa occurrence_id)
-          source: |
-            curl -L \
-              --request PUT \
-              --url 'https://api.rapatin.id/schedules/81911244410' \
-              --header 'Authorization: Bearer {token}' \
-              --header 'Content-Type: application/json' \
-              --data '{
-                "recurring": false,
-                "topic": "Weekly Team Sync (reschedule)",
-                "start_date": "2025-08-25",
-                "start_time": "15:30",
-                "is_mute_participant_upon_entry": true
-              }'
-        - lang: cURL
-          label: Update recurring — all occurrences (tanpa occurrence_id)
-          source: |
-            curl -L \
-              --request PUT \
-              --url 'https://api.rapatin.id/schedules/89757997072' \
-              --header 'Authorization: Bearer {token}' \
-              --header 'Content-Type: application/json' \
-              --data '{
-                "recurring": true,
-                "topic": "Weekly Sales Meeting (rename)",
-                "start_time": "10:30",
-                "is_meeting_qna": true,
-                "is_mute_participant_upon_entry": false
-              }'
-        - lang: cURL
-          label: Update recurring — this occurrence (dengan occurrence_id)
-          source: |
-            curl -L \
-              --request PUT \
-              --url 'https://api.rapatin.id/schedules/89757997072?occurrence_id=1756260000000' \
-              --header 'Authorization: Bearer {token}' \
-              --header 'Content-Type: application/json' \
-              --data '{
-                "recurring": true,
-                "start_date": "2025-08-27",
-                "start_time": "10:00"
-              }'
 
       responses:
         '200':
@@ -157,12 +92,9 @@ paths:
                 $ref: "#/components/schemas/ScheduleUpdateSuccessResponse"
               examples:
                 updatedOneTime:
-                  summary: Berhasil ubah one-time
+                  summary: One-time updated
                   value:
-                    response:
-                      status: success
-                      status_code: 200
-                      message: Schedule updated successfully
+                    response: { status: success, status_code: 200, message: Schedule updated successfully }
                     data:
                       id: 110
                       topic: "Weekly Team Sync (reschedule)"
@@ -182,10 +114,6 @@ paths:
                       is_req_permission_to_unmute_participants: false
                       editable: true
                       is_used: false
-                      custom_live_streaming:
-                        stream_url: null
-                        stream_key: null
-                        live_stream_page_url: null
                       created_at: "2025-08-22T01:36:06.000000Z"
                       updated_at: "2025-08-23T05:01:00.000000Z"
                       product: { id: 1, name: "Meeting 100 Participants", capacity: 100 }
@@ -200,13 +128,47 @@ paths:
                         end_type: null
                         end_date: null
                         end_after_type: null
-                updatedOccurrence:
-                  summary: Berhasil ubah satu occurrence recurring
+                updatedSeries:
+                  summary: Recurring (all occurrences) updated
                   value:
-                    response:
-                      status: success
-                      status_code: 200
-                      message: Schedule updated successfully
+                    response: { status: success, status_code: 200, message: Schedule updated successfully }
+                    data:
+                      id: 111
+                      topic: "Weekly Sales Meeting (rename)"
+                      passcode: "987654"
+                      recurring: true
+                      start_date: "2025-08-24"
+                      start_time: "10:30:00"
+                      meeting_id: "89757997072"
+                      occurence_id: "1756087200000"
+                      join_url: "https://us06web.zoom.us/j/89757997072?pwd=dn3pRow..."
+                      registration_url: "https://us06web.zoom.us/meeting/register/xxxx"
+                      waiting_room: 1
+                      is_meeting_registration: true
+                      is_meeting_qna: true
+                      is_language_interpretation: false
+                      is_mute_participant_upon_entry: true
+                      is_req_permission_to_unmute_participants: true
+                      editable: true
+                      is_used: false
+                      created_at: "2025-08-22T01:37:01.000000Z"
+                      updated_at: "2025-08-23T06:00:00.000000Z"
+                      product: { id: 1, name: "Meeting 100 Participants", capacity: 100 }
+                      account: { id: 13, name: "Space 11" }
+                      recurring_data:
+                        total_recurring: 11
+                        recurrence: 2
+                        repeat_interval: 1
+                        monthly_day: null
+                        monthly_week: null
+                        weekly_days: null
+                        end_type: end_date
+                        end_date: "2025-09-30"
+                        end_after_type: null
+                updatedOccurrence:
+                  summary: Recurring (single occurrence) updated
+                  value:
+                    response: { status: success, status_code: 200, message: Schedule updated successfully }
                     data:
                       id: 112
                       topic: "Weekly Sales Meeting"
@@ -226,10 +188,6 @@ paths:
                       is_req_permission_to_unmute_participants: true
                       editable: true
                       is_used: false
-                      custom_live_streaming:
-                        stream_url: null
-                        stream_key: null
-                        live_stream_page_url: null
                       created_at: "2025-08-22T01:37:01.000000Z"
                       updated_at: "2025-08-23T06:10:00.000000Z"
                       product: { id: 1, name: "Meeting 100 Participants", capacity: 100 }
@@ -244,12 +202,9 @@ paths:
                         end_type: end_date
                         end_date: "2025-09-30"
                         end_after_type: null
-        '400':
-          description: Validation error
-        '401':
-          description: Unauthorized (token tidak valid)
-        '422':
-          description: Unprocessable Entity (kombinasi parameter tidak valid / melanggar batasan update)
+        '400': { description: Validation error }
+        '401': { description: Unauthorized (token tidak valid) }
+        '422': { description: Unprocessable Entity (kombinasi parameter tidak valid / melanggar batasan update) }
 
 components:
   securitySchemes:
@@ -259,10 +214,16 @@ components:
       bearerFormat: JWT
 
   schemas:
-    # ---------- REQUEST SCHEMAS ----------
-    CommonUpdateFields:
+    # ---------- REQUEST SCHEMAS (judul muncul di Body card) ----------
+    UpdateOneTimeBody:
+      title: One-time Schedule
       type: object
+      required: [recurring]
       properties:
+        recurring:
+          type: boolean
+          enum: [false]
+          description: Harus **false** untuk one-time schedule.
         topic:
           type: string
           maxLength: 200
@@ -274,14 +235,10 @@ components:
         start_date:
           type: string
           format: date
-          description: >-
-            Tanggal pelaksanaan (YYYY-MM-DD).
-            *Tidak dapat diubah jika* `is_used = 1` *atau* tanggal sudah berlalu.
+          description: "Tanggal pelaksanaan (YYYY-MM-DD)."
         start_time:
           type: string
-          description: >-
-            Jam pelaksanaan (format 24 jam, HH:MM).
-            *Tidak dapat diubah jika* `is_used = 1` *atau* tanggal sudah berlalu.
+          description: "Jam pelaksanaan (format 24 jam, HH:MM)."
         is_meeting_registration:
           type: boolean
           description: Apakah membutuhkan registrasi peserta.
@@ -297,90 +254,55 @@ components:
         is_req_permission_to_unmute_participants:
           type: boolean
           description: Peserta membutuhkan izin host untuk melakukan unmute.
-      description: >-
-        **Catatan:** `product_id`, `meeting_id`, dan `account_id` tidak dapat
-        diubah melalui endpoint ini (dibatasi oleh server).
 
-    UpdateOneTimeScheduleRequest:
-      title: One-time Schedule
-      allOf:
-        - $ref: "#/components/schemas/CommonUpdateFields"
-        - type: object
-          properties:
-            recurring:
-              type: boolean
-              enum: [false]
-              description: Harus **false** untuk one-time schedule.
-          required: [recurring]
+    UpdateRecurringAllOccurrencesBody:
+      title: Recurring Schedule — All Occurrences (Series)
+      type: object
+      required: [recurring]
+      properties:
+        recurring:
+          type: boolean
+          enum: [true]
+          description: Harus **true** untuk recurring meeting (edit seri).
+        topic:
+          type: string
+          maxLength: 200
+          description: Ubah judul/topik seri.
+        passcode:
+          type: string
+          maxLength: 10
+          description: Ubah passcode seri.
+        start_time:
+          type: string
+          description: "Ubah jam mulai seluruh occurrence ke depan (HH:MM)."
+        is_meeting_registration: { type: boolean }
+        is_meeting_qna: { type: boolean }
+        is_language_interpretation: { type: boolean }
+        is_mute_participant_upon_entry: { type: boolean }
+        is_req_permission_to_unmute_participants: { type: boolean }
+      description: |-
+        **Catatan:** `start_date` **tidak dapat diubah** untuk edit seri. 
+        Seluruh field pola recurring (`recurrence`, `repeat_interval`, `weekly_days`, `monthly_day`, `monthly_week`, `end_type`, `end_date`, `end_after_type`) tidak didukung pada update seri.
 
-    UpdateRecurringScheduleRequest:
-      title: Recurring Schedule
-      allOf:
-        - $ref: "#/components/schemas/CommonUpdateFields"
-        - type: object
-          properties:
-            recurring:
-              type: boolean
-              enum: [true]
-              description: Harus **true** untuk recurring meeting.
-            recurrence:
-              type: integer
-              enum: [1, 2, 3]
-              description: |-
-                Jenis pengulangan:
-                - 1 = Harian
-                - 2 = Mingguan
-                - 3 = Bulanan
-            repeat_interval:
-              type: integer
-              minimum: 1
-              description: Interval pengulangan. Harian max 99, Mingguan max 50, Bulanan max 10.
-            weekly_days:
-              type: array
-              items:
-                type: integer
-                minimum: 1
-                maximum: 7
-              description: |-
-                Hanya untuk **recurrence = 2 (Mingguan)**:
-                - 1 = Sunday
-                - 2 = Monday
-                - 3 = Tuesday
-                - 4 = Wednesday
-                - 5 = Thursday
-                - 6 = Friday
-                - 7 = Saturday
-            monthly_day:
-              type: integer
-              minimum: 1
-              maximum: 31
-              description: "Hanya untuk **recurrence = 3 (Bulanan)**. Alternatif dari **monthly_week**."
-            monthly_week:
-              type: integer
-              enum: [1, 2, 3, 4, 5]
-              description: |-
-                Hanya untuk **recurrence = 3 (Bulanan)**:
-                - 1 = First week
-                - 2 = Second week
-                - 3 = Third week
-                - 4 = Fourth week
-                - 5 = Last week
-            end_type:
-              type: string
-              enum: [end_date, end_after_type]
-              description: Cara berhenti—berdasarkan tanggal atau jumlah pengulangan.
-            end_date:
-              type: string
-              format: date
-              description: Wajib jika **end_type = end_date**.
-            end_after_type:
-              type: integer
-              description: Wajib jika **end_type = end_after_type** (jumlah pengulangan).
-          required:
-            - recurring
-            - recurrence
-            - repeat_interval
-            - end_type
+    UpdateSingleOccurrenceBody:
+      title: Recurring Schedule — Single Occurrence (This occurrence)
+      type: object
+      required: [recurring]
+      properties:
+        recurring:
+          type: boolean
+          enum: [true]
+          description: Harus **true** untuk jadwal recurring (edit occurrence tunggal).
+        start_date:
+          type: string
+          format: date
+          description: "Tanggal occurrence (YYYY-MM-DD)."
+        start_time:
+          type: string
+          description: "Jam occurrence (HH:MM)."
+      description: |-
+        **Gunakan query `occurrence_id`** pada URL. Hanya `start_date` dan/atau `start_time` yang diproses;
+        field pola recurring akan **diabaikan**.
 
     # ---------- RESPONSE SCHEMAS ----------
     ScheduleUpdateSuccessResponse:
@@ -395,7 +317,7 @@ components:
         data:
           $ref: "#/components/schemas/ScheduleItemFull"
 
-    # Struktur detail jadwal penuh
+    # Struktur detail jadwal penuh (dipakai ulang di berbagai endpoint)
     ScheduleItemFull:
       type: object
       properties:
@@ -417,12 +339,6 @@ components:
         is_req_permission_to_unmute_participants: { type: boolean }
         editable: { type: boolean }
         is_used: { type: boolean }
-        custom_live_streaming:
-          type: object
-          properties:
-            stream_url: { type: string, nullable: true }
-            stream_key: { type: string, nullable: true }
-            live_stream_page_url: { type: string, nullable: true }
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
         product:
