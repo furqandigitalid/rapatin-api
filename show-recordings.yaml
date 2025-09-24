@@ -11,7 +11,7 @@ paths:
   /recordings/{meeting_id}:
     get:
       tags: [Recording Details]
-      summary: Get Recording Details
+      summary: Mengambil Detil Rekaman
       description: |-
         Mengambil **satu** sesi rekaman untuk `meeting_id` tertentu.
 
