@@ -15,8 +15,15 @@ paths:
         Ambil daftar rekaman rapat (cloud recordings).
 
         **Filter (opsional):**
-        - `meeting_id` → tampilkan rekaman untuk Meeting ID tertentu.
+        - `meeting_id` → tampilkan rekaman untuk Meeting ID tertentu. Menggunakan parameter ini memungkinkan mengambil berkas beberapa sesi rekaman dari satu jadwal
         - `status` → batasi hasil ke salah satu dari `ready`, `processing`, atau `deleted`.
+
+        **Catatan status & ketersediaan berkas:**
+        - **ready** → Rekaman sudah siap. `share_url` tersedia, dan `files` berisi daftar berkas (MP4, M4A, dst).  
+          Bidang `delete_on` menandakan *jadwal penghapusan otomatis* (masa aktif rekaman **3×24 jam**).
+        - **processing** → Rekaman masih diproses dan disalin ke penyimpanan. **`share_url` dan `files` belum tersedia** (akan `null`) sampai status berubah menjadi **ready**.
+        - **deleted** → Rekaman **sudah dihapus oleh sistem** (masa aktif 3×24 jam telah lewat). **`share_url` dan `files` tidak ada/`null`** karena tidak dapat diakses lagi.  
+          Bidang `delete_on` menunjukkan tanggal penghapusan.
       parameters:
         - in: header
           name: Authorization
