@@ -1,0 +1,139 @@
+openapi: 3.0.0
+info:
+  title: Reports - By Meeting
+  version: 1.0.0
+  description: Ambil daftar **session report** untuk satu `meeting_id`.
+
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /reports/{meeting_id}:
+    get:
+      tags: [Report Details]
+      summary: Mengambil Detil Laporan Jadwal
+      description: |-
+        Mengembalikan **array** report untuk sebuah `meeting_id`.  
+        Satu meeting dapat memiliki beberapa sesi pada hari yang sama; semua sesi akan dikembalikan sebagai beberapa item pada array.
+
+        Field per item yang dikembalikan:
+        - `participants_count`: jumlah peserta unik yang bergabung ke rapat.
+        - `duration`: durasi rapat dalam turunan menit.
+        - `start_time`: waktu dimulainya sesi rapat.
+        - `end_time`: waktu berakhir sesi rapat
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: path
+          name: meeting_id
+          required: true
+          description: Meeting ID yang ingin diambil report-nya (gunakan string untuk menjaga leading zero).
+          schema:
+            type: string
+            example: "84439309192"
+      responses:
+        '200':
+          description: Record fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportsByMeetingResponse"
+              example:
+                response:
+                  status: success
+                  status_code: 200
+                  message: Record fetched successfully
+                data:
+                  items:
+                    - id: 3920
+                      uuid: "9G4lb9JnSNiRCL2xIryYxg=="
+                      topic: "Pembekalan Wisuda Universitas Pekalongan Periode September"
+                      meeting_id: "84439309192"
+                      participants_count: 2
+                      duration: 2
+                      start_time: "2025-09-24T05:28:49Z"
+                      end_time: "2025-09-24T05:29:32Z"
+                    - id: 3919
+                      uuid: "BffGuSKJRgi1r0wMBTC8Aw=="
+                      topic: "Pembekalan Wisuda Universitas Pekalongan Periode September"
+                      meeting_id: "84439309192"
+                      participants_count: 2
+                      duration: 2
+                      start_time: "2025-09-24T05:22:35Z"
+                      end_time: "2025-09-24T05:27:22Z"
+                    - id: 3918
+                      uuid: "StJnC3C6TEKQ37kgqKJMWqQ=="
+                      topic: "Pembekalan Wisuda Universitas Pekalongan Periode September"
+                      meeting_id: "84439309192"
+                      participants_count: 450
+                      duration: 246
+                      start_time: "2025-09-24T00:46:41Z"
+                      end_time: "2025-09-24T05:22:21Z"
+        '401':
+          description: Unauthorized (token tidak valid)
+        '404':
+          description: Report untuk meeting_id tersebut tidak ditemukan
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ReportItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID internal report.
+        uuid:
+          type: string
+          description: Meeting UUID / recording session UUID.
+        topic:
+          type: string
+        meeting_id:
+          type: string
+        participants_count:
+          type: integer
+          description: Jumlah peserta unik pada meeting.
+        duration:
+          type: string
+          description: Durasi rapat dalam menit.
+          example: 248
+        start_time:
+          type: string
+          format: date-time
+          description: Waktu mulai (UTC, ISO 8601).
+        end_time:
+          type: string
+          format: date-time
+          description: Waktu selesai (UTC, ISO 8601).
+
+    ReportsByMeetingResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status: { type: string, example: success }
+            status_code: { type: integer, example: 200 }
+            message: { type: string, example: Record fetched successfully }
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/ReportItem"
