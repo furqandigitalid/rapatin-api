@@ -10,7 +10,7 @@ servers:
 paths:
   /reports/{meeting_id}:
     get:
-      tags: [Report Details]
+      tags: [Show Report]
       summary: Mengambil Detil Laporan Jadwal
       description: |-
         Mengembalikan **array** report untuk sebuah `meeting_id`.  
