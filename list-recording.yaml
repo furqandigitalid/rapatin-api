@@ -15,7 +15,6 @@ paths:
         Ambil semua daftar rekaman rapat (cloud recordings).
 
         **Filter (opsional):**
-        - `meeting_id` → tampilkan rekaman untuk Meeting ID tertentu. Menggunakan parameter ini memungkinkan mengambil berkas beberapa sesi rekaman dari satu jadwal
         - `status` → batasi hasil ke salah satu dari `ready`, `processing`, atau `deleted`.
 
         **Catatan status & ketersediaan berkas:**
@@ -43,13 +42,6 @@ paths:
           schema:
             type: string
             example: application/json
-        - in: query
-          name: meeting_id
-          required: false
-          schema:
-            type: string
-            example: "87376605700"
-          description: Filter berdasarkan Zoom Meeting ID.
         - in: query
           name: status
           required: false
