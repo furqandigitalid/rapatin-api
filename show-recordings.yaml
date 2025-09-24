@@ -15,9 +15,8 @@ paths:
       description: |-
         Mengambil **satu** sesi rekaman untuk `meeting_id` tertentu.
 
-        - Jika sebuah jadwal memiliki beberapa sesi rekaman, **server akan mengembalikan sesi pertama**.
-        - Opsional, kirim **`uuid`** untuk meminta **sesi tertentu** dari rekaman meeting tersebut.
-
+        - Jika sebuah jadwal memiliki beberapa sesi rekaman, **server akan mengembalikan semua sesi dalam array**.
+        
         **Catatan status & ketersediaan berkas:**
         - **ready** → rekaman siap; `share_url` tersedia dan `files` berisi daftar berkas (MP4, M4A, CC, CHAT, TRANSCRIPT, TIMELINE, dll).  
           `delete_on` menunjukkan jadwal hapus otomatis (masa aktif rekaman **3×24 jam**).
@@ -50,13 +49,6 @@ paths:
             type: string
             example: "85095598095"
           description: Zoom Meeting ID.
-        - in: query
-          name: uuid
-          required: false
-          schema:
-            type: string
-            example: "WuPF5b6WRqGRIMOML52Gcw=="
-          description: UUID sesi rekaman tertentu. Jika tidak dikirim, server mengembalikan sesi **pertama**.
 
       responses:
         '200':
