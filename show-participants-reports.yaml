@@ -32,14 +32,14 @@ paths:
         - in: path
           name: meeting_id
           required: true
-          description: Meeting ID Zoom (contoh: "84439309192").
+          description: Meeting ID Zoom
           schema:
             type: string
             example: "84439309192"
         - in: query
           name: uuid
           required: false
-          description: UUID sesi tertentu (contoh: "StJnC3C6TEKQ37kgqKJMWqQ==").
+          description: UUID sesi tertentu
           schema:
             type: string
             example: "StJnC3C6TEKQ37kgqKJMWqQ=="
