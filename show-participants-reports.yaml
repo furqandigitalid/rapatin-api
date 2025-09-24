@@ -1,0 +1,179 @@
+openapi: 3.0.0
+info:
+  title: Reports - Participants
+  version: 1.0.0
+  description: |-
+    Ambil daftar **peserta** untuk sebuah sesi rapat.
+
+    - **Path param tunggal** `{id}` dapat berupa **meeting_id** *atau* **meeting_uuid (uuid)*.
+    - Jika yang dikirim **meeting_id** dan meeting tersebut memiliki beberapa sesi,
+      maka API akan mengembalikan **sesi terakhir** (latest session) untuk meeting tersebut.
+    - Jika yang dikirim **uuid**, API mengembalikan data untuk **sesi spesifik** itu.
+
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /reports/participants/{id}:
+    get:
+      tags: [Reports]
+      summary: List Participants by Meeting ID or UUID
+      description: |-
+        Mengembalikan ringkasan peserta pada sebuah sesi meeting dan daftar pesertanya.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: path
+          name: id
+          required: true
+          description: |-
+            **meeting_id** *atau* **meeting uuid**.  
+            - Contoh meeting_id: `"84439309192"`  
+            - Contoh uuid: `"StJnC3C6TEKQ37kgqKJMWqQ=="`
+          schema:
+            type: string
+          examples:
+            byMeetingId:
+              summary: Gunakan meeting_id (mengambil sesi terakhir)
+              value: "84439309192"
+            byUuid:
+              summary: Gunakan uuid (sesi spesifik)
+              value: "StJnC3C6TEKQ37kgqKJMWqQ=="
+      responses:
+        '200':
+          description: Record fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantsResponse'
+              examples:
+                byMeetingIdLatestSession:
+                  summary: OK (input meeting_id → sesi terakhir)
+                  value:
+                    response:
+                      status: success
+                      status_code: 200
+                      message: Record fetched successfully
+                    data:
+                      uuid: "StJnC3C6TEKQ37kgqKJMWqQ=="
+                      meeting_id: "84439309192"
+                      topic: "Pembekalan Wisuda Universitas Pekalongan Periode September"
+                      participant_count: 8
+                      participants:
+                        - name: "UNIKAL"
+                          user_id: "16778240"
+                          user_email: "unikal@example.ac.id"
+                          duration: 276
+                          join_time: "2025-09-24T00:46:41Z"
+                          leave_time: "2025-09-24T05:22:21Z"
+                        - name: "Nuriya Idah Safitri"
+                          user_id: "16781342"
+                          user_email: "nuriya.safitri@example.com"
+                          duration: 21
+                          join_time: "2025-09-24T01:15:02Z"
+                          leave_time: "2025-09-24T01:35:02Z"
+                        - name: "Sivana Aprilia"
+                          user_id: "16783236"
+                          user_email: "sivana.aprilia@example.com"
+                          duration: 27
+                          join_time: "2025-09-24T01:14:49Z"
+                          leave_time: "2025-09-24T01:15:17Z"
+                byUuidSpecificSession:
+                  summary: OK (input uuid → sesi spesifik)
+                  value:
+                    response:
+                      status: success
+                      status_code: 200
+                      message: Record fetched successfully
+                    data:
+                      uuid: "9G4lb9JnSNiRCL2xIryYxg=="
+                      meeting_id: "84439309192"
+                      topic: "Pembekalan Wisuda Universitas Pekalongan Periode September (Sesi 3)"
+                      participant_count: 2
+                      participants:
+                        - name: "Rayhan"
+                          user_id: "16784384"
+                          user_email: "rayhan@example.com"
+                          duration: 3
+                          join_time: "2025-09-24T01:14:57Z"
+                          leave_time: "2025-09-24T01:15:00Z"
+                        - name: "Muhammad Fahri Al Aziz"
+                          user_id: "16785408"
+                          user_email: "fahri.aziz@example.com"
+                          duration: 4
+                          join_time: "2025-09-24T01:15:03Z"
+                          leave_time: "2025-09-24T01:15:07Z"
+        '401':
+          description: Unauthorized (token tidak valid)
+        '404':
+          description: Data peserta untuk meeting/uuid tersebut tidak ditemukan
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ParticipantItem:
+      type: object
+      properties:
+        name:
+          type: string
+        user_id:
+          type: string
+          description: ID pengguna Zoom (bisa numerik tapi disajikan sebagai string).
+        user_email:
+          type: string
+          nullable: true
+        duration:
+          type: integer
+          description: Lama hadir (dalam **menit**).
+          example: 276
+        join_time:
+          type: string
+          format: date-time
+          description: Waktu pertama kali bergabung (UTC, ISO 8601).
+        leave_time:
+          type: string
+          format: date-time
+          description: Waktu terakhir keluar (UTC, ISO 8601).
+
+    ParticipantsPayload:
+      type: object
+      properties:
+        uuid:
+          type: string
+        meeting_id:
+          type: string
+        topic:
+          type: string
+        participant_count:
+          type: integer
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParticipantItem'
+
+    ParticipantsResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status: { type: string, example: success }
+            status_code: { type: integer, example: 200 }
+            message: { type: string, example: Record fetched successfully }
+        data:
+          $ref: '#/components/schemas/ParticipantsPayload'
