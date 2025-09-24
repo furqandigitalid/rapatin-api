@@ -57,26 +57,26 @@ paths:
                   items:
                     - id: 3920
                       uuid: "9G4lb9JnSNiRCL2xIryYxg=="
-                      topic: "Pembekalan Wisuda Universitas Pekalongan Periode September"
-                      meeting_id: "84439309192"
+                      topic: "Pembekalan Wisuda Universitas"
+                      meeting_id: "84439309392"
                       participants_count: 2
                       duration: 2
                       start_time: "2025-09-24T05:28:49Z"
                       end_time: "2025-09-24T05:29:32Z"
                     - id: 3919
                       uuid: "BffGuSKJRgi1r0wMBTC8Aw=="
-                      topic: "Pembekalan Wisuda Universitas Pekalongan Periode September"
-                      meeting_id: "84439309192"
+                      topic: "Pembekalan Wisuda Universitas"
+                      meeting_id: "84439309392"
                       participants_count: 2
                       duration: 2
                       start_time: "2025-09-24T05:22:35Z"
                       end_time: "2025-09-24T05:27:22Z"
                     - id: 3918
                       uuid: "StJnC3C6TEKQ37kgqKJMWqQ=="
-                      topic: "Pembekalan Wisuda Universitas Pekalongan Periode September"
-                      meeting_id: "84439309192"
-                      participants_count: 450
-                      duration: 246
+                      topic: "Pembekalan Wisuda Universitas"
+                      meeting_id: "84439309392"
+                      participants_count: 400
+                      duration: 206
                       start_time: "2025-09-24T00:46:41Z"
                       end_time: "2025-09-24T05:22:21Z"
         '401':
