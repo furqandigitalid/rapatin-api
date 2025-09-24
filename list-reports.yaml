@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: Reports
+  version: 1.0.0
+  description: API untuk mengambil daftar laporan (schedule reports) rapat.
+
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /reports:
+    get:
+      tags: [Reports]
+      summary: List Schedule Reports
+      description: |-
+        Mengambil semua daftar **report** rapat yang telah digunakan.
+
+        Field per item yang dikembalikan:
+        - `participants_count`: jumlah peserta unik yang bergabung ke rapat.
+        - `duration`: durasi rapat dalam turunan menit.
+        - `start_time`: waktu dimulainya sesi rapat.
+        - `end_time`: waktu berakhir sesi rapat
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+      responses:
+        '200':
+          description: Record fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportsListResponse"
+              example:
+                response:
+                  status: success
+                  status_code: 200
+                  message: Record fetched successfully
+                data:
+                  items:
+                    - id: 3927
+                      uuid: "fpA+362HRMqqWGNWsryUxQ=="
+                      topic: "Training Prakerja"
+                      meeting_id: "84578539281"
+                      participants_count: 313
+                      duration: 480
+                      start_time: "2025-09-24T01:28:48Z"
+                      end_time: "2025-09-24T09:35:49Z"
+                    - id: 3926
+                      uuid: "p0w2p2b7J2yq2YFJ8x3g5A=="
+                      topic: "Webinar FYP Content From Research"
+                      meeting_id: "83347264221"
+                      participants_count: 128
+                      duration: 400
+                      start_time: "2025-09-20T06:00:00Z"
+                      end_time: "2025-09-20T06:58:00Z"
+                    - id: 3925
+                      uuid: "9kKc9c1LwO1mZ1Wm2l3s1Q=="
+                      topic: "Kelas EasyEDA"
+                      meeting_id: "88913355854"
+                      participants_count: 64
+                      duration: 180
+                      start_time: "2025-09-24T02:05:00Z"
+                      end_time: "2025-09-24T03:37:00Z"
+                  meta:
+                    current_page: 1
+                    per_page: 15
+                    total: 3
+                    last_page: 1
+        '401':
+          description: Unauthorized (token tidak valid)
+        '422':
+          description: Parameter tidak valid
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ReportItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID internal report.
+        uuid:
+          type: string
+          description: UUID/Meeting UUID.
+        topic:
+          type: string
+        meeting_id:
+          type: string
+        participants_count:
+          type: integer
+          description: Jumlah peserta unik pada meeting.
+        duration:
+          type: string
+          description: Durasi rapat dalam menit.
+          example: 240
+        start_time:
+          type: string
+          format: date-time
+          description: Waktu mulai (UTC, ISO 8601).
+        end_time:
+          type: string
+          format: date-time
+          description: Waktu selesai (UTC, ISO 8601).
+
+    ReportsListResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status: { type: string, example: success }
+            status_code: { type: integer, example: 200 }
+            message: { type: string, example: Record fetched successfully }
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/ReportItem"
+            meta:
+              type: object
+              properties:
+                current_page: { type: integer, example: 1 }
+                per_page: { type: integer, example: 15 }
+                total: { type: integer, example: 3 }
+                last_page: { type: integer, example: 1 }
