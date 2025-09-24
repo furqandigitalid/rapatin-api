@@ -16,8 +16,8 @@ servers:
 paths:
   /reports/participants/{id}:
     get:
-      tags: [Reports]
-      summary: List Participants by Meeting ID or UUID
+      tags: [Show Participant Reports]
+      summary: Daftar Partisipan Sebuah Jadwal
       description: |-
         Mengembalikan ringkasan peserta pada sebuah sesi meeting dan daftar pesertanya.
       parameters:
