@@ -2,24 +2,20 @@ openapi: 3.0.0
 info:
   title: Reports - Participants
   version: 1.0.0
-  description: |-
-    Ambil daftar **peserta** untuk sebuah sesi rapat.
-
-    - **Path param tunggal** `{id}` dapat berupa **meeting_id** *atau* **meeting_uuid (uuid)*.
-    - Jika yang dikirim **meeting_id** dan meeting tersebut memiliki beberapa sesi,
-      maka API akan mengembalikan **sesi terakhir** (latest session) untuk meeting tersebut.
-    - Jika yang dikirim **uuid**, API mengembalikan data untuk **sesi spesifik** itu.
+  description: Spesifikasi untuk mengambil daftar peserta sebuah sesi rapat.
 
 servers:
   - url: https://api.rapatin.id
 
 paths:
-  /reports/participants/{id}:
+  /reports/participants/{meeting_id}:
     get:
-      tags: [Show Participant Reports]
-      summary: Daftar Partisipan Sebuah Jadwal
+      tags: [Show Participants Report]
+      summary: Mengambil Daftar Partisipan yang Bergabung ke Ruang Rapat
       description: |-
-        Mengembalikan ringkasan peserta pada sebuah sesi meeting dan daftar pesertanya.
+        Ambil daftar **peserta** untuk sebuah sesi rapat.
+        - **Tanpa `uuid` (query)** → kembalikan **sesi terakhir** untuk `meeting_id` tersebut.
+        - **Dengan `uuid` (query)** → kembalikan data untuk **sesi spesifik** itu.
       parameters:
         - in: header
           name: Authorization
@@ -34,21 +30,19 @@ paths:
             type: string
             example: application/json
         - in: path
-          name: id
+          name: meeting_id
           required: true
-          description: |-
-            **meeting_id** *atau* **meeting uuid**.  
-            - Contoh meeting_id: `"84439309192"`  
-            - Contoh uuid: `"StJnC3C6TEKQ37kgqKJMWqQ=="`
+          description: Meeting ID Zoom (contoh: "84439309192").
           schema:
             type: string
-          examples:
-            byMeetingId:
-              summary: Gunakan meeting_id (mengambil sesi terakhir)
-              value: "84439309192"
-            byUuid:
-              summary: Gunakan uuid (sesi spesifik)
-              value: "StJnC3C6TEKQ37kgqKJMWqQ=="
+            example: "84439309192"
+        - in: query
+          name: uuid
+          required: false
+          description: UUID sesi tertentu (contoh: "StJnC3C6TEKQ37kgqKJMWqQ==").
+          schema:
+            type: string
+            example: "StJnC3C6TEKQ37kgqKJMWqQ=="
       responses:
         '200':
           description: Record fetched successfully
@@ -57,8 +51,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ParticipantsResponse'
               examples:
-                byMeetingIdLatestSession:
-                  summary: OK (input meeting_id → sesi terakhir)
+                latestSessionByMeetingId:
+                  summary: OK (tanpa `uuid` → sesi terakhir)
                   value:
                     response:
                       status: success
@@ -68,7 +62,7 @@ paths:
                       uuid: "StJnC3C6TEKQ37kgqKJMWqQ=="
                       meeting_id: "84439309192"
                       topic: "Pembekalan Wisuda Universitas Pekalongan Periode September"
-                      participant_count: 8
+                      participant_count: 3
                       participants:
                         - name: "UNIKAL"
                           user_id: "16778240"
@@ -88,8 +82,8 @@ paths:
                           duration: 27
                           join_time: "2025-09-24T01:14:49Z"
                           leave_time: "2025-09-24T01:15:17Z"
-                byUuidSpecificSession:
-                  summary: OK (input uuid → sesi spesifik)
+                specificSessionByUuid:
+                  summary: OK (dengan `uuid` → sesi spesifik)
                   value:
                     response:
                       status: success
@@ -98,7 +92,7 @@ paths:
                     data:
                       uuid: "9G4lb9JnSNiRCL2xIryYxg=="
                       meeting_id: "84439309192"
-                      topic: "Pembekalan Wisuda Universitas Pekalongan Periode September (Sesi 3)"
+                      topic: "Pembekalan Wisuda (Sesi 3)"
                       participant_count: 2
                       participants:
                         - name: "Rayhan"
@@ -133,18 +127,18 @@ components:
           type: string
         user_id:
           type: string
-          description: ID pengguna Zoom (bisa numerik tapi disajikan sebagai string).
+          description: ID pengguna Zoom (ditampilkan sebagai string).
         user_email:
           type: string
           nullable: true
         duration:
           type: integer
-          description: Lama hadir (dalam **menit**).
+          description: Lama hadir **dalam menit**.
           example: 276
         join_time:
           type: string
           format: date-time
-          description: Waktu pertama kali bergabung (UTC, ISO 8601).
+          description: Waktu pertama bergabung (UTC, ISO 8601).
         leave_time:
           type: string
           format: date-time
