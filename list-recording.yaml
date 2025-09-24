@@ -10,9 +10,9 @@ paths:
   /recordings:
     get:
       tags: [List Recordings]
-      summary: Get List Recordings
+      summary: Mengambil Daftar Rekaman
       description: |-
-        Ambil daftar rekaman rapat (cloud recordings).
+        Ambil semua daftar rekaman rapat (cloud recordings).
 
         **Filter (opsional):**
         - `meeting_id` → tampilkan rekaman untuk Meeting ID tertentu. Menggunakan parameter ini memungkinkan mengambil berkas beberapa sesi rekaman dari satu jadwal
