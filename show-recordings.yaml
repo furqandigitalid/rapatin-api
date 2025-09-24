@@ -1,0 +1,225 @@
+openapi: 3.0.0
+info:
+  title: Get Recording by Meeting ID
+  version: 1.0.0
+  description: Ambil detail satu sesi rekaman untuk sebuah `meeting_id`.
+
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /recordings/{meeting_id}:
+    get:
+      tags: [Recordings]
+      summary: Get Recording by Meeting ID
+      description: |-
+        Mengambil **satu** sesi rekaman untuk `meeting_id` tertentu.
+
+        - Jika sebuah jadwal memiliki beberapa sesi rekaman, **server akan mengembalikan sesi pertama**.
+        - Opsional, kirim **`uuid`** untuk meminta **sesi tertentu** dari rekaman meeting tersebut.
+
+        **Catatan status & ketersediaan berkas:**
+        - **ready** → rekaman siap; `share_url` tersedia dan `files` berisi daftar berkas (MP4, M4A, CC, CHAT, TRANSCRIPT, TIMELINE, dll).  
+          `delete_on` menunjukkan jadwal hapus otomatis (masa aktif rekaman **3×24 jam**).
+        - **processing** → rekaman masih diproses; **`share_url` dan `files` `null`** hingga berubah menjadi `ready`.
+        - **deleted** → rekaman **sudah dihapus sistem** (masa aktif 3×24 jam berakhir); **`share_url` & `files` `null`**, `delete_on` menunjukkan tanggal penghapusan.
+
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Content-Type
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: path
+          name: meeting_id
+          required: true
+          schema:
+            type: string
+            example: "85095598095"
+          description: Zoom Meeting ID.
+        - in: query
+          name: uuid
+          required: false
+          schema:
+            type: string
+            example: "WuPF5b6WRqGRIMOML52Gcw=="
+          description: UUID sesi rekaman tertentu. Jika tidak dikirim, server mengembalikan sesi **pertama**.
+
+      responses:
+        '200':
+          description: Record fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordingDetailResponse"
+              examples:
+                ready:
+                  summary: Ready
+                  value:
+                    response:
+                      status: success
+                      status_code: 200
+                      message: Record fetched successfully
+                    data:
+                      uuid: "WuPF5b6WRqGRIMOML52Gcw=="
+                      meeting_id: "85095598095"
+                      status: "ready"
+                      topic: "QA Test API Recordings"
+                      recorded_on: "2025-09-24"
+                      share_url: "https://us06web.zoom.us/rec/share/9VxSMf1vo8dAG9eSV6qM9nIbiduoumCEaM3i8a7jGzKG5MQrEdrwGRzmPB_cCsNm.8F8xCJp2O4rYN_Nm"
+                      delete_on: "2025-09-28"
+                      files:
+                        - recording_type: "gallery_view"
+                          file_type: "MP4"
+                          file_size: "55249694"
+                          download_url: "https://us06web.zoom.us/rec/webhook_download/F6q1ynYPgecEG88nYJGvvTVIojKtmffyMrxz6eLypw06pjLXSN1FIPiqASeK8IxCvVwQK4Ryf-deV17i.RD1wrA0SG1VGmRKw/DuulIKb89vLillteBeSSp7lN4b-JRbNy1P93QLSrYfdqbBF2ypgY8fjp3GbBrFpN8q7IwbX8N_kPjyQZ1d9Z82TGZLV8wCqCZQAhEyxN_PN_EIkMhE4OIa7XK2048D1tCq5mqUY27zLbYrYGd9yPZfWAaAg2cov10zSWVlA3x0BbbirHDySkRQtrTSvSpCoEA7aFtDLF6zJHrOjoMSYki_7DhCNboY90vO3aleH-ISCpt8EFACC--pqY1ooEv22Nvs1z-HFLXDyIx1lgTVhfWTaLcJVpPwaMretjZ_qcv7oaeJPrScHEJBgy7iaU8atDEHv1atjXsiuODohgOZN3XA"
+                          play_url: "https://us06web.zoom.us/rec/play/F6q1ynYPgecEG88nYJGvvTVIojKtmffyMrxz6eLypw06pjLXSN1FIPiqASeK8IxCvVwQK4Ryf-deV17i.RD1wrA0SG1VGmRKw"
+                        - recording_type: "active_speaker"
+                          file_type: "MP4"
+                          file_size: "8410672"
+                          download_url: "https://us06web.zoom.us/rec/webhook_download/VOrLsM2ncE0Cy38KpLmiAObGqAG_EmC-yDjEwah07u4d0Rv50nrpOgrYe7idpf9Lf2aI9oqPqQDtuFlx.jneSGSaW-sblx_W6/LTXNgIAaaAZXwra-7XOpK5l8YxLGKLLdBlBDZouJlvYysKtgTcPn_H4uRY_mptiRDCGiU9WKUIShBcsUqfwy-CwVdp0_3MSgTCYkYLo-UfA7_ynBgm649xay5-LjLmEcQcvAxpSe7MGHX49eV96-LA8P73Za9IeC6ZX0tbpRoRtxn4z0r4-REvD74kAMOXhQWrqoHvulhzt7fEc6MkAC1v4gulCjID_vFlBAM1F37p9yjiB9V0gtHw9c8bCaJNIytltEGo8qrbeKwxFhN57m8beiD659nXGKXM4r5L-jGEqAsFXpKHA4FtpDwrHf0oXUUswkNd0j7uJC3mAUOi6XDg"
+                          play_url: "https://us06web.zoom.us/rec/play/VOrLsM2ncE0Cy38KpLmiAObGqAG_EmC-yDjEwah07u4d0Rv50nrpOgrYe7idpf9Lf2aI9oqPqQDtuFlx.jneSGSaW-sblx_W6"
+                        - recording_type: "audio_only"
+                          file_type: "M4A"
+                          file_size: "7316661"
+                          download_url: "https://us06web.zoom.us/rec/webhook_download/Chig7_KvcgRKuPnd3yPlKjOghQludrBTfauQqeGEFUd0hFxKOPW5jZzflCHb7OVEtKNtWzn_ZS5tIEI8.hBUR5H63GGMkFTbY/b3oXMBUfDwQ4_EM18_kAT-YXiThnfC2uP4wPD8Jjss0r_cwhKyqevDibmPIp9l5C-CSYErzn3aoBV-j60YwVBWCZLCpazaGz9Y2lOy-YcijvOEo-SyfGCz4zEFUTHg6jBqdmmj8DDvqsbVMgjUGqrD95DaK1Dt6qBsB6GdaoGdOKNRlQzJOr8RScxHFkat2P3fUyRiUHH1jQajK0eYnjJEZHUxeAARJe2BkH1Tay8SIFnocWFv91g5wG2nwm9HOGkel0f8Yipzbhwwa5uQHoXX5uYea5BiIO9MVJoQwqUzKk--FFx1hZ4xjl9wR9CSoaUNolbySN3d46DfXM_SojNg"
+                          play_url: "https://us06web.zoom.us/rec/play/Chig7_KvcgRKuPnd3yPlKjOghQludrBTfauQqeGEFUd0hFxKOPW5jZzflCHb7OVEtKNtWzn_ZS5tIEI8.hBUR5H63GGMkFTbY"
+                        - recording_type: "closed_caption"
+                          file_type: "CC"
+                          file_size: "7029"
+                          download_url: "https://us06web.zoom.us/rec/webhook_download/fHHFnv9_4CDBgO1TbfXVZwsUvMsDb9LmJRlH8MWwhTusqOj_j6RG8ThyOX1YmdNFdllCgNrVQ7NY9lx_.fkONCdfQf0Z_GR2r/BZZ356CJj8F9q-3g6_4_s3alQz_S53P_ukpVFwfhHp2ez5e8PGNdGpRqLMc3WZGeMetrjf-PgxxQ2iqsnnCC09AwJ7CU-JQi170zr9XnIUqxxtxXZqk752_z7isyZSNa0RbUynsxojtRpr7uE0agW9u1LQoRbCzT7rv8P7Gvd117pnGV8meTxy60K3iJAHtpv5IFzOrtektWRLZ3PpstuXBcSst6TUdNt6JS-RoRTjaa3IZtFoVLRYXDYsFi6SklhRYuWQYWponjLSRGleoUCVqXGM5D1sbigOad-xTQHlqNaj8oG2fc-xBR44v-GWf7b5NvufrJD_jV9GHFesR97Q?type=cc"
+                          play_url: ""
+                        - recording_type: "chat_file"
+                          file_type: "CHAT"
+                          file_size: "147"
+                          download_url: "https://us06web.zoom.us/rec/webhook_download/MmvaoSbfBV1sfJr4mJJncfajasomTqC40jh8HYNg6xrkZFAciMjx7U9Z9w7C39LzpMy12OSfWZuJXkRE.iXLMTaj0B3JxbYgD/M9dRIObmfBkg2WJgv45-bj7pOoGBNETk2T35DIAmNM-rTS-cwtDG2Eet_R5TENnzUee-Z7MpC0R0NbLtsVgLNaccmnXpdzFNf0C0CINo_dUl_waVt1zZny_BhqUDr2cenjL3K66YCjr6AV-pgDM3-3cpjLixuaczhZ1b9Icca3tf7oDeoW6JkuyWCusBtvZnNdUW5AEtNnP7c10uOVUtr4bC4LpYdKJxtoPw5eI0mTLtv5on7YGBUB5GdZ9BH4xuOcrxt-ihMn5optlbSWIZ-thK4LZrHnLepcoClLvI5Ak0ggRg-0WwgTCZ0ZrsnGEtO4htuDa42KTYmN_7_wtZog"
+                          play_url: "https://us06web.zoom.us/rec/play/MmvaoSbfBV1sfJr4mJJncfajasomTqC40jh8HYNg6xrkZFAciMjx7U9Z9w7C39LzpMy12OSfWZuJXkRE.iXLMTaj0B3JxbYgD"
+                        - recording_type: "audio_transcript"
+                          file_type: "TRANSCRIPT"
+                          file_size: "7898"
+                          download_url: "https://us06web.zoom.us/rec/webhook_download/HIpLc0fxSkSc4kABloLuhO3uJYHqim2vsnG4DHsCXh9oLGIdSnZbkPznNhrcLM4hscLwWMVLUyN9Tp48.gdXdwAIujLTMd_DN/P-ct0Awv9UJdqryf8_gM6GNJiBqLunbk1nbYwyrcJ3Ex567OcpTecA3e4ln6zhaDbV9gljY7g0k4M93QQclXzPCSElYfS8OdNcolZmkaVGJ6PFrOaBFQpLaplwHUAeP5n_Uyyma1ySYNZnKtfFYgXQelaBXFrLVcgkLZ77JfEX17F5le8YQ9idd5_7VpBeyfAaiO-DVMiIj4LVZ_GsCVjVqLnbUH-7l9lz71_StW4G94iea5HXH5VqTAMn-xeyArasSwruHoSJtVnMsBMRjj4RNv1b3faI5cSzEjDgc9VZAMy7XNmpQ06jem5FkSc0uDZYK_x4lu06oOU3V36OQunA"
+                          play_url: "https://us06web.zoom.us/rec/play/HIpLc0fxSkSc4kABloLuhO3uJYHqim2vsnG4DHsCXh9oLGIdSnZbkPznNhrcLM4hscLwWMVLUyN9Tp48.gdXdwAIujLTMd_DN"
+                        - recording_type: "timeline"
+                          file_type: "TIMELINE"
+                          file_size: "93"
+                          download_url: "https://us06web.zoom.us/rec/webhook_download/qXDkdQnQz9-pnNPm0pV5Z1aKdj_SBUxxk0hP6OyWEEeo2pl7IAopAbSphb5s2NjsbEMK_c10iItMooFp.sk6rMKj-slGJumq0/EZgSp8D2zq78BLXJwrO7IR06iOK6sVbwbKLGSWIObVb_83R_48AGa0mvOYTlAtbH9G4UmN7ZJ5UL0DHLhENqyzAe2jcVrbxHDdh3bEEQ3L8M84ng_loqyySa4eVY1-A5cSEPIFDqkbZjXSb7skOi0zmEZO927XODX-9eQ9IDSDBhWF181tvS4ZUpSV4xfFbqlsEy--cSAFssUxhqIE3Nr2VE5PHLEjN8oeudHTt0cneabffDfPcngclxw9nCMtBYy-y1OhgWDjeSqvOxYu5ehdNyY8zY1Z_GrwPjUc1OvnqUmRx3X86qoNW5RNZ3wqM9Q_Lf4UNHWGfln7tcbR-RPg"
+                          play_url: ""
+                processing:
+                  summary: Processing
+                  value:
+                    response:
+                      status: success
+                      status_code: 200
+                      message: Record fetched successfully
+                    data:
+                      uuid: "gRERbfPwSFG0FYKqOwVzMw=="
+                      meeting_id: "88913355954"
+                      status: "processing"
+                      topic: "Kelas Kuliah"
+                      recorded_on: "2025-09-24"
+                      share_url: null
+                      delete_on: null
+                      files: null
+                deleted:
+                  summary: Deleted
+                  value:
+                    response:
+                      status: success
+                      status_code: 200
+                      message: Record fetched successfully
+                    data:
+                      uuid: "oQaoZcQzTVe7eUvnCtmNgA=="
+                      meeting_id: "83347244221"
+                      status: "deleted"
+                      topic: "Webinar FYP Content Tiktok"
+                      recorded_on: "2025-09-20"
+                      share_url: null
+                      delete_on: "2025-09-24"
+                      files: null
+        '401':
+          description: Unauthorized (token tidak valid)
+        '404':
+          description: Recording not found
+        '422':
+          description: Parameter tidak valid
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RecordingFile:
+      type: object
+      properties:
+        recording_type:
+          type: string
+          description: Jenis rekaman (mis. `gallery_view`, `active_speaker`, `audio_only`, `closed_caption`, `chat_file`, `audio_transcript`, `timeline`).
+        file_type:
+          type: string
+          description: Tipe file (MP4, M4A, CC, CHAT, TRANSCRIPT, TIMELINE).
+        file_size:
+          type: string
+          description: Ukuran file dalam byte (string numerik).
+        download_url:
+          type: string
+          description: URL unduhan langsung (tersedia saat `status = ready`).
+        play_url:
+          type: string
+          description: URL pemutaran (jika ada).
+
+    RecordingItem:
+      type: object
+      properties:
+        uuid: { type: string }
+        meeting_id: { type: string }
+        status:
+          type: string
+          enum: [ready, processing, deleted]
+          description: |-
+            - **ready**: siap; `share_url` & `files` tersedia; `delete_on` adalah jadwal hapus otomatis (**3×24 jam**).
+            - **processing**: masih diproses; **`share_url` & `files` `null`**.
+            - **deleted**: sudah dihapus sistem; **`share_url` & `files` `null`**, `delete_on` adalah tanggal penghapusan.
+        topic: { type: string }
+        recorded_on:
+          type: string
+          format: date
+        share_url:
+          type: string
+          nullable: true
+        delete_on:
+          type: string
+          format: date
+          nullable: true
+        files:
+          type: array
+          nullable: true
+          items:
+            $ref: "#/components/schemas/RecordingFile"
+
+    RecordingDetailResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status: { type: string, example: success }
+            status_code: { type: integer, example: 200 }
+            message: { type: string, example: Record fetched successfully }
+        data:
+          $ref: "#/components/schemas/RecordingItem"
