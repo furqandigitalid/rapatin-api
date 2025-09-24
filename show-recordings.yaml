@@ -10,8 +10,8 @@ servers:
 paths:
   /recordings/{meeting_id}:
     get:
-      tags: [Recordings]
-      summary: Get Recording by Meeting ID
+      tags: [Recording Details]
+      summary: Recording Details
       description: |-
         Mengambil **satu** sesi rekaman untuk `meeting_id` tertentu.
 
