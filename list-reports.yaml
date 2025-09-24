@@ -10,7 +10,8 @@ servers:
 paths:
   /reports:
     get:
-      tags: [List Schedule Reports]
+      tags: [List Reports]
+      summary: Mengambil Daftar Laporan Jadwal
       description: |-
         Mengambil semua daftar **report** rapat yang telah digunakan.
 
