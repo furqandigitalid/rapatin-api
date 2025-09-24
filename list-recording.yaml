@@ -9,7 +9,7 @@ servers:
 paths:
   /recordings:
     get:
-      tags: [Recordings]
+      tags: [Recording Lists]
       summary: List Recordings
       description: |-
         Ambil daftar rekaman rapat (cloud recordings).
