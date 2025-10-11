@@ -68,20 +68,20 @@ paths:
                           user_id: "16778240"
                           user_email: "unikal@example.ac.id"
                           duration: 276
-                          join_time: "2025-09-24T00:46:41Z"
-                          leave_time: "2025-09-24T05:22:21Z"
+                          join_time: "2025-09-24T07:46:41Z"
+                          leave_time: "2025-09-24T12:22:21Z"
                         - name: "Nuriya Idah Safitri"
                           user_id: "16781342"
                           user_email: "nuriya.safitri@example.com"
                           duration: 21
-                          join_time: "2025-09-24T01:15:02Z"
-                          leave_time: "2025-09-24T01:35:02Z"
+                          join_time: "2025-09-24T08:15:02Z"
+                          leave_time: "2025-09-24T08:35:02Z"
                         - name: "Sivana Aprilia"
                           user_id: "16783236"
                           user_email: "sivana.aprilia@example.com"
                           duration: 27
-                          join_time: "2025-09-24T01:14:49Z"
-                          leave_time: "2025-09-24T01:15:17Z"
+                          join_time: "2025-09-24T08:14:49Z"
+                          leave_time: "2025-09-24T08:15:17Z"
                 specificSessionByUuid:
                   summary: OK (dengan `uuid` → sesi spesifik)
                   value:
