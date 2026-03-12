@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  title: Cancel Order Balance
+  version: 1.0.0
+  description: Endpoint untuk membatalkan order balance yang sudah dibuat tetapi belum dibayar.
+
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /balances/order/{order_number}/cancel:
+    post:
+      tags: [Balances]
+      summary: Cancel Order Balance
+      description: |-
+        Membatalkan order balance berdasarkan nomor order.
+
+        **Catatan:**
+        - Hanya order dengan status **belum dibayar / pending** yang dapat dibatalkan.
+        - Jika order sudah dibayar atau sudah dibatalkan sebelumnya, maka request akan ditolak.
+      parameters:
+        - in: path
+          name: order_number
+          required: true
+          schema:
+            type: string
+            example: OR-3349
+          description: Nomor order balance.
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      responses:
+        '200':
+          description: Order balance cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelOrderBalanceSuccessResponse"
+              example:
+                response:
+                  status: success
+                  status_code: 200
+                  message: Order balance cancelled successfully
+                data:
+                  order_number: "OR-3349"
+                  status: "cancelled"
+                  cancelled_at: "2025-10-12 14:30:00"
+        '401':
+          description: Unauthorized (token tidak valid)
+        '404':
+          description: Order not found
+        '422':
+          description: Order cannot be cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelOrderBalanceErrorResponse"
+              examples:
+                alreadyPaid:
+                  summary: Order sudah dibayar
+                  value:
+                    response:
+                      status: error
+                      status_code: 422
+                      message: Order cannot be cancelled
+                    errors:
+                      order:
+                        - "This order has already been paid."
+                alreadyCancelled:
+                  summary: Order sudah dibatalkan
+                  value:
+                    response:
+                      status: error
+                      status_code: 422
+                      message: Order cannot be cancelled
+                    errors:
+                      order:
+                        - "This order has already been cancelled."
+
+components:
+  schemas:
+    CancelOrderBalanceSuccessResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            status_code:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Order balance cancelled successfully
+        data:
+          type: object
+          properties:
+            order_number:
+              type: string
+              example: OR-3349
+            status:
+              type: string
+              example: cancelled
+            cancelled_at:
+              type: string
+              description: "YYYY-MM-DD HH:mm:ss"
+              example: "2025-10-12 14:30:00"
+
+    CancelOrderBalanceErrorResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            status_code:
+              type: integer
+              example: 422
+            message:
+              type: string
+              example: Order cannot be cancelled
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
