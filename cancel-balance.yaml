@@ -10,7 +10,7 @@ servers:
 paths:
   /balances/order/{order_number}/cancel:
     post:
-      tags: [Balances]
+      tags: [Cancel Order Balance]
       summary: Cancel Order Balance
       description: |-
         Membatalkan order balance berdasarkan nomor order.
