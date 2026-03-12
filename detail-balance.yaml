@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Show Order Balance Detail
-  version: 1.0.0
+  version: 1.0.1
   description: Endpoint untuk mengambil detail order balance berdasarkan nomor order.
 
 servers:
@@ -19,7 +19,7 @@ paths:
           required: true
           schema:
             type: string
-            example: OR-3349
+            example: OR3260
           description: Nomor order balance.
         - in: header
           name: Accept
@@ -46,20 +46,22 @@ paths:
                   status_code: 200
                   message: Order balance retrieved successfully
                 data:
-                  order_number: "OR-3349"
-                  balance: 200000
+                  order_number: "OR3260"
+                  customer_name: "FDN"
+                  email: "dulugeser@gmail.com"
+                  phone: "088221759697"
+                  item_name: "Balance"
+                  amount: 200000
                   payment_method: "virtual_account"
-                  promo_code: "PROMOHEMAT"
-                  discount_amount: 10000
-                  payment_fee: 4440
-                  total_amount: 194440
-                  status: "pending"
-                  payment_url: "https://checkout.xendit.co/web/67a1bcde1234567890"
-                  expired_at: "2025-10-12 15:00:00"
+                  payment_method_label: "VA"
+                  status: "expired"
+                  order_date: "2026-03-07 10:30:00"
+                  expired_at: "2026-03-07 12:30:00"
                   paid_at: null
                   cancelled_at: null
-                  created_at: "2025-10-12 14:00:00"
-                  updated_at: "2025-10-12 14:00:00"
+                  payment_url: null
+                  created_at: "2026-03-07 10:30:00"
+                  updated_at: "2026-03-07 12:30:01"
         '401':
           description: Unauthorized (token tidak valid)
         '404':
@@ -88,62 +90,69 @@ components:
             order_number:
               type: string
               description: Nomor order balance.
-              example: OR-3349
-            balance:
+              example: OR3260
+            customer_name:
+              type: string
+              description: Nama customer.
+              example: FDN
+            email:
+              type: string
+              description: Email customer.
+              example: dulugeser@gmail.com
+            phone:
+              type: string
+              description: Nomor telepon customer.
+              example: "088221759697"
+            item_name:
+              type: string
+              description: Nama item order.
+              example: Balance
+            amount:
               type: integer
               description: Nominal balance yang dibeli.
               example: 200000
             payment_method:
               type: string
-              description: Metode pembayaran yang dipilih.
+              description: Kode metode pembayaran.
               example: virtual_account
-            promo_code:
+            payment_method_label:
               type: string
-              nullable: true
-              description: Promo code yang digunakan, jika ada.
-              example: PROMOHEMAT
-            discount_amount:
-              type: integer
-              description: Nominal potongan promo.
-              example: 10000
-            payment_fee:
-              type: integer
-              description: Biaya pembayaran.
-              example: 4440
-            total_amount:
-              type: integer
-              description: Total akhir yang harus dibayar.
-              example: 194440
+              description: Label metode pembayaran yang ditampilkan ke user.
+              example: VA
             status:
               type: string
-              description: Status order balance.
               enum: [pending, paid, cancelled, expired]
-              example: pending
-            payment_url:
+              description: Status order balance.
+              example: expired
+            order_date:
               type: string
-              nullable: true
-              description: URL halaman pembayaran Xendit.
-              example: https://checkout.xendit.co/web/67a1bcde1234567890
+              description: "Tanggal order dalam format YYYY-MM-DD HH:mm:ss"
+              example: "2026-03-07 10:30:00"
             expired_at:
               type: string
               nullable: true
-              description: "YYYY-MM-DD HH:mm:ss"
-              example: "2025-10-12 15:00:00"
+              description: "Tanggal expired pembayaran dalam format YYYY-MM-DD HH:mm:ss"
+              example: "2026-03-07 12:30:00"
             paid_at:
               type: string
               nullable: true
-              description: "YYYY-MM-DD HH:mm:ss"
+              description: "Tanggal pembayaran berhasil dalam format YYYY-MM-DD HH:mm:ss"
               example: null
             cancelled_at:
               type: string
               nullable: true
-              description: "YYYY-MM-DD HH:mm:ss"
+              description: "Tanggal order dibatalkan dalam format YYYY-MM-DD HH:mm:ss"
+              example: null
+            payment_url:
+              type: string
+              nullable: true
+              description: URL pembayaran jika order masih dapat dibayar.
               example: null
             created_at:
               type: string
-              description: "YYYY-MM-DD HH:mm:ss"
-              example: "2025-10-12 14:00:00"
+              description: "Tanggal record dibuat dalam format YYYY-MM-DD HH:mm:ss"
+              example: "2026-03-07 10:30:00"
             updated_at:
               type: string
-              description: "YYYY-MM-DD HH:mm:ss"
-              example: "2025-10-12 14:00:00"
+              description: "Tanggal record terakhir diperbarui dalam format YYYY-MM-DD HH:mm:ss"
+              example: "2026-03-07 12:30:01"
