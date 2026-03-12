@@ -10,7 +10,7 @@ servers:
 paths:
   /balances/order/{order_number}:
     get:
-      tags: [Balances]
+      tags: [Order Balance Detail]
       summary: Show Order Balance Detail
       description: Ambil detail order balance berdasarkan nomor order.
       parameters:
