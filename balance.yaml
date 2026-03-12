@@ -1,0 +1,265 @@
+openapi: 3.0.0
+info:
+  title: Order Balance
+  version: 1.0.0
+  description: Endpoint untuk membuat order top up balance dan mendapatkan halaman pembayaran Xendit.
+
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /balances/order:
+    post:
+      tags: [Balances]
+      summary: Create Order Balance
+      description: |-
+        Membuat order top up balance dan mengembalikan data pembayaran dari Xendit.
+
+        **Nominal balance yang diperbolehkan:**
+        - 25000
+        - 50000
+        - 100000
+        - 200000
+        - 500000
+        - 1000000
+
+        **Payment method yang diperbolehkan:**
+        - virtual_account
+        - qris
+        - shopeepay
+        - dana
+        - linkaja
+
+        **Catatan:**
+        - `promo_code` bersifat opsional.
+        - Endpoint ini akan membuat order pembayaran dan mengembalikan URL/halaman pembayaran Xendit.
+      parameters:
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: header
+          name: Content-Type
+          required: true
+          schema:
+            type: string
+            example: application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderBalanceRequest"
+            examples:
+              virtualAccount:
+                summary: Order via Virtual Account
+                value:
+                  balance: 200000
+                  payment_method: virtual_account
+                  promo_code: "PROMOHEMAT"
+              qris:
+                summary: Order via QRIS
+                value:
+                  balance: 500000
+                  payment_method: qris
+              shopeepay:
+                summary: Order via ShopeePay
+                value:
+                  balance: 100000
+                  payment_method: shopeepay
+              dana:
+                summary: Order via Dana
+                value:
+                  balance: 50000
+                  payment_method: dana
+              linkaja:
+                summary: Order via LinkAja
+                value:
+                  balance: 25000
+                  payment_method: linkaja
+      responses:
+        '201':
+          description: Order balance created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderBalanceSuccessResponse"
+              example:
+                response:
+                  status: success
+                  status_code: 201
+                  message: Order balance created successfully
+                data:
+                  order_number: "OR-3349"
+                  balance: 200000
+                  payment_method: "virtual_account"
+                  promo_code: "PROMOHEMAT"
+                  discount_amount: 10000
+                  payment_fee: 4440
+                  total_amount: 194440
+                  xendit:
+                    reference_id: "topup-or-3349"
+                    invoice_id: "inv_67a1bcde1234567890"
+                    invoice_url: "https://checkout.xendit.co/web/67a1bcde1234567890"
+                    expiry_date: "2025-10-12T15:00:00Z"
+        '401':
+          description: Unauthorized (token tidak valid)
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderBalanceValidationErrorResponse"
+              examples:
+                invalidBalance:
+                  summary: Balance tidak valid
+                  value:
+                    response:
+                      status: error
+                      status_code: 422
+                      message: Validation error
+                    errors:
+                      balance:
+                        - "The selected balance is invalid."
+                invalidPaymentMethod:
+                  summary: Payment method tidak valid
+                  value:
+                    response:
+                      status: error
+                      status_code: 422
+                      message: Validation error
+                    errors:
+                      payment_method:
+                        - "The selected payment method is invalid."
+                invalidPromoCode:
+                  summary: Promo code tidak valid
+                  value:
+                    response:
+                      status: error
+                      status_code: 422
+                      message: Validation error
+                    errors:
+                      promo_code:
+                        - "Promo code is invalid or expired."
+
+components:
+  schemas:
+    OrderBalanceRequest:
+      type: object
+      required:
+        - balance
+        - payment_method
+      properties:
+        balance:
+          type: integer
+          enum: [25000, 50000, 100000, 200000, 500000, 1000000]
+          description: Nilai balance/top up yang ingin dibeli.
+          example: 200000
+        payment_method:
+          type: string
+          enum: [virtual_account, qris, shopeepay, dana, linkaja]
+          description: Metode pembayaran yang dipilih.
+          example: virtual_account
+        promo_code:
+          type: string
+          nullable: true
+          description: Kode promo jika ada.
+          example: PROMOHEMAT
+
+    OrderBalanceSuccessResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            status_code:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Order balance created successfully
+        data:
+          type: object
+          properties:
+            order_number:
+              type: string
+              description: Nomor order balance.
+              example: OR-3349
+            balance:
+              type: integer
+              description: Nominal balance yang dibeli.
+              example: 200000
+            payment_method:
+              type: string
+              description: Metode pembayaran yang dipilih.
+              example: virtual_account
+            promo_code:
+              type: string
+              nullable: true
+              description: Promo code yang digunakan, jika ada.
+              example: PROMOHEMAT
+            discount_amount:
+              type: integer
+              description: Nominal potongan dari promo code.
+              example: 10000
+            payment_fee:
+              type: integer
+              description: Biaya pembayaran.
+              example: 4440
+            total_amount:
+              type: integer
+              description: Total akhir yang harus dibayar.
+              example: 194440
+            xendit:
+              type: object
+              properties:
+                reference_id:
+                  type: string
+                  description: Reference ID internal untuk pembayaran.
+                  example: topup-or-3349
+                invoice_id:
+                  type: string
+                  description: ID invoice dari Xendit.
+                  example: inv_67a1bcde1234567890
+                invoice_url:
+                  type: string
+                  description: URL halaman pembayaran Xendit.
+                  example: https://checkout.xendit.co/web/67a1bcde1234567890
+                expiry_date:
+                  type: string
+                  format: date-time
+                  description: Waktu kedaluwarsa pembayaran.
+                  example: "2025-10-12T15:00:00Z"
+
+    OrderBalanceValidationErrorResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            status_code:
+              type: integer
+              example: 422
+            message:
+              type: string
+              example: Validation error
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
