@@ -10,7 +10,7 @@ servers:
 paths:
   /balances/orders:
     get:
-      tags: [Balances]
+      tags: [List Order Balance]
       summary: List Order Balance
       description: Ambil daftar order balance milik user yang sedang login.
       parameters:
