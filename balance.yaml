@@ -10,7 +10,7 @@ servers:
 paths:
   /balances/order:
     post:
-      tags: [Balances]
+      tags: [Add Balances]
       summary: Create Order Balance
       description: |-
         Membuat order top up balance dan mengembalikan data pembayaran dari Xendit.
