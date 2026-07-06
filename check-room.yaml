@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: Check Room
+  version: 1.0.0
+  description: Endpoint untuk mengecek jumlah room yang tersedia berdasarkan tanggal.
+
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /check-room:
+    get:
+      tags: [Schedules]
+      summary: Check Room Availability
+      description: Mengembalikan jumlah room yang tersedia untuk setiap kapasitas pada tanggal tertentu.
+      parameters:
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            example: "07-07-2026"
+          description: Tanggal yang ingin dicek dengan format DD-MM-YYYY.
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      responses:
+        '200':
+          description: Records fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckRoomSuccessResponse"
+              example:
+                response:
+                  status: success
+                  status_code: 200
+                  message: Records fetched successfully
+                data:
+                  - capacity: 1000
+                    available: 5
+                  - capacity: 100
+                    available: 29
+                  - capacity: 500
+                    available: 2
+                  - capacity: 300
+                    available: 3
+        '401':
+          description: Unauthorized (token tidak valid)
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckRoomValidationErrorResponse"
+              example:
+                response:
+                  status: error
+                  status_code: 422
+                  message: Validation error
+                errors:
+                  date:
+                    - "The date field is required."
+
+components:
+  schemas:
+    CheckRoomSuccessResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            status_code:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Records fetched successfully
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CheckRoomItem"
+
+    CheckRoomItem:
+      type: object
+      properties:
+        capacity:
+          type: integer
+          description: Kapasitas room/meeting.
+          example: 1000
+        available:
+          type: integer
+          description: Jumlah room yang masih tersedia pada kapasitas tersebut.
+          example: 5
+
+    CheckRoomValidationErrorResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            status_code:
+              type: integer
+              example: 422
+            message:
+              type: string
+              example: Validation error
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
