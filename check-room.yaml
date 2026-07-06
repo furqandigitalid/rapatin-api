@@ -10,8 +10,8 @@ servers:
 paths:
   /check-room:
     get:
-      tags: [Schedules]
-      summary: Check Room Availability
+      tags: [Check Room]
+      summary: Periksa Ketersediaan Ruang
       description: Mengembalikan jumlah room yang tersedia untuk setiap kapasitas pada tanggal tertentu.
       parameters:
         - in: query
