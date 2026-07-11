@@ -81,6 +81,10 @@ paths:
                       type: boolean
                       enum: [false]
                       description: "Harus false untuk one-time schedule"
+                    is_auto_recording:
+                      type: boolean
+                      default: false
+                      description: Mengaktifkan fitur otomatis memulai merekam Cloud saat ruang rapat dipakai
                     is_meeting_registration:
                       type: boolean
                       default: false
@@ -195,6 +199,10 @@ paths:
                     end_after_type:
                       type: integer
                       description: "Wajib jika **end_type** = **end_after_type** (jumlah pengulangan)."
+                    is_auto_recording:
+                      type: boolean
+                      default: false
+                      description: Mengaktifkan fitur otomatis memulai merekam Cloud saat ruang rapat dipakai
                     is_meeting_registration:
                       type: boolean
                       default: false
@@ -225,6 +233,7 @@ paths:
                   start_date: "2025-08-29"
                   start_time: "20:00"
                   recurring: false
+                  is_auto_recording: false
                   is_meeting_registration: false
                   is_meeting_qna: false
                   is_language_interpretation: false
@@ -243,6 +252,7 @@ paths:
                   repeat_interval: 1
                   end_type: "end_date"
                   end_date: "2025-08-24"
+                  is_auto_recording: false
                   is_meeting_registration: false
                   is_meeting_qna: false
                   is_language_interpretation: false
@@ -303,6 +313,7 @@ paths:
                       join_url: "https://us06web.zoom.us/j/83803081288?pwd=xHUmuXNnCcp6uhblE75U9w52i1IYEs.1"
                       registration_url: null
                       waiting_room: 1
+                      is_auto_recording: false
                       is_meeting_registration: false
                       is_meeting_qna: false
                       is_language_interpretation: false
@@ -352,6 +363,7 @@ paths:
                       join_url: "https://us06web.zoom.us/j/84727876665?pwd=7E40zfIlAQU5mzvp5PbZbEz2KbfbdR.1"
                       registration_url: null
                       waiting_room: 1
+                      is_auto_recording: false
                       is_meeting_registration: false
                       is_meeting_qna: false
                       is_language_interpretation: false
@@ -460,6 +472,8 @@ components:
             waiting_room:
               type: integer
               description: Status ruang tunggu (1 = ditutup, 0 = dibuka)
+            is_auto_recording:
+              type: boolean
             is_meeting_registration:
               type: boolean
             is_meeting_qna:
