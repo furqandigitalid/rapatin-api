@@ -15,7 +15,7 @@ paths:
   /schedules/{meeting_id}/polls:
     post:
       tags:
-        - Create Schedule Polls
+        - Create Polling
       summary: Membuat polling pada jadwal
       description: |-
         Membuat polling baru pada sebuah jadwal meeting Zoom berdasarkan `meeting_id`.
