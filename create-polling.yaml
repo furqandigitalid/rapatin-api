@@ -16,34 +16,20 @@ paths:
       summary: Membuat polling pada jadwal
       description: 'Membuat polling baru pada sebuah jadwal meeting Zoom berdasarkan `meeting_id`.
 
-
         Satu polling dapat memiliki satu atau lebih pertanyaan.
 
-
         **Jenis pertanyaan yang tersedia:**
-
         - `single` — peserta hanya dapat memilih satu jawaban.
-
         - `multiple` — peserta dapat memilih lebih dari satu jawaban.
 
-
         **Ketentuan:**
-
         - `title` wajib diisi.
-
         - Minimal terdapat satu pertanyaan.
-
         - Setiap pertanyaan wajib memiliki minimal dua jawaban.
-
         - Jika `required = true`, peserta wajib menjawab pertanyaan tersebut sebelum mengirim polling.
-
         - Jadwal harus dimiliki oleh pengguna yang sedang terautentikasi.
-
         - Polling hanya dapat dibuat pada jadwal yang masih tersedia dan belum dihapus.
-
-        '
-      security:
-      - bearerAuth: []
+        
       parameters:
       - in: path
         name: meeting_id
@@ -53,6 +39,12 @@ paths:
           type: string
           maxLength: 255
           example: '84887441426'
+      - in: header
+        name: Authorization
+        required: true
+        schema:
+          type: string
+          example: "Bearer {token}"
       - in: header
         name: Content-Type
         required: true
