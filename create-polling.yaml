@@ -121,12 +121,8 @@ paths:
                   message: Poll created successfully
                 data:
                   id: 117
-                  customer_id: 14
-                  schedule_id: 12319
                   meeting_id: "84887441426"
-                  poll_id: "57kj4tqOQ9CKxmeetFtECg"
                   title: "Evaluasi Sesi Pelatihan"
-                  status: "draft"
                   questions:
                     - type: "single"
                       question: "Bagaimana penilaian Anda terhadap pemateri?"
@@ -355,11 +351,8 @@ components:
       type: object
       required:
         - id
-        - customer_id
-        - schedule_id
         - meeting_id
         - title
-        - status
         - questions
         - created_at
         - updated_at
@@ -370,30 +363,11 @@ components:
           description: ID polling.
           example: 117
 
-        customer_id:
-          type: integer
-          format: int64
-          description: ID pengguna pemilik polling.
-          example: 14
-
-        schedule_id:
-          type: integer
-          format: int64
-          description: ID jadwal.
-          example: 12319
-
         meeting_id:
           type: string
           maxLength: 255
           description: Zoom Meeting ID.
           example: "84887441426"
-
-        poll_id:
-          type: string
-          maxLength: 255
-          nullable: true
-          description: Zoom Poll ID.
-          example: "57kj4tqOQ9CKxmeetFtECg"
 
         title:
           type: string
@@ -401,27 +375,11 @@ components:
           description: Judul polling.
           example: "Evaluasi Sesi Pelatihan"
 
-        status:
-          type: string
-          enum:
-            - draft
-            - created
-            - started
-            - ended
-          description: Status polling.
-          example: "draft"
-
         questions:
           type: array
           description: Daftar pertanyaan polling.
           items:
             $ref: "#/components/schemas/PollQuestion"
-
-        zoom_response:
-          type: object
-          nullable: true
-          additionalProperties: true
-          description: Respons dari Zoom apabila tersedia.
 
         created_at:
           type: string
