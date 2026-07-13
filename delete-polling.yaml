@@ -11,7 +11,7 @@ paths:
   /schedules/{meeting_id}/polls:
     delete:
       tags:
-      - Polling
+      - Delete Schedule Polls
       summary: Menghapus polling pada jadwal
       description: Menghapus polling pada sebuah jadwal meeting berdasarkan `meeting_id`.
       parameters:
