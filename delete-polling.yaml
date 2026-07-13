@@ -1,0 +1,76 @@
+openapi: 3.0.0
+info:
+  title: Delete Schedule Poll
+  version: 1.0.1
+  description: Spesifikasi untuk menghapus polling pada sebuah jadwal rapat Rapatin.
+servers:
+- url: https://api.rapatin.id
+tags:
+- name: Polling
+  description: Pengelolaan polling pada jadwal rapat.
+paths:
+  /schedules/{meeting_id}/polls:
+    delete:
+      tags:
+      - Polling
+      summary: Menghapus polling pada jadwal
+      description: Menghapus polling pada sebuah jadwal meeting berdasarkan `meeting_id`.
+      parameters:
+      - in: path
+        name: meeting_id
+        required: true
+        description: Zoom Meeting ID dari jadwal yang pollingnya akan dihapus.
+        schema:
+          type: string
+          example: '84887441426'
+      - in: header
+        name: Content-Type
+        required: true
+        description: Format data yang dikirim.
+        schema:
+          type: string
+          example: application/json
+      - in: header
+        name: Authorization
+        required: true
+        description: Token autentikasi dalam format Bearer.
+        schema:
+          type: string
+          example: Bearer {{token}}
+      responses:
+        '200':
+          description: Poll deleted successfully
+          content:
+            application/json:
+              example:
+                response:
+                  status: success
+                  status_code: 200
+                  message: Poll deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              example:
+                response:
+                  status: error
+                  status_code: 401
+                  message: Unauthenticated
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              example:
+                response:
+                  status: error
+                  status_code: 403
+                  message: You are not authorized to delete this poll
+        '404':
+          description: Poll not found
+          content:
+            application/json:
+              example:
+                response:
+                  status: error
+                  status_code: 404
+                  message: Poll not found
