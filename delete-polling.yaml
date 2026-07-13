@@ -6,8 +6,7 @@ info:
 servers:
 - url: https://api.rapatin.id
 tags:
-- name: Polling
-  description: Pengelolaan polling pada jadwal rapat.
+- name: Delete Schedule Poll
 paths:
   /schedules/{meeting_id}/polls:
     delete:
