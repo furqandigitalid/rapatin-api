@@ -1,0 +1,506 @@
+openapi: 3.0.0
+info:
+  title: Create Schedule Poll
+  version: 1.0.0
+  description: Spesifikasi untuk membuat polling pada sebuah jadwal rapat Rapatin.
+
+servers:
+  - url: https://api.rapatin.id
+
+paths:
+  /schedules/{meeting_id}/polls:
+    post:
+      tags:
+        - Polling
+      summary: Membuat Polling pada Jadwal
+      description: |-
+        Membuat polling baru pada sebuah jadwal meeting Zoom berdasarkan `meeting_id`.
+
+        Satu polling dapat memiliki satu atau lebih pertanyaan.
+
+        **Jenis pertanyaan yang tersedia:**
+        - `single_choice` — peserta hanya dapat memilih satu jawaban.
+        - `multiple_choice` — peserta dapat memilih lebih dari satu jawaban.
+
+        **Ketentuan:**
+        - `poll_title` wajib diisi.
+        - Minimal terdapat satu pertanyaan.
+        - Setiap pertanyaan wajib memiliki minimal dua opsi jawaban.
+        - Jika `required = true`, peserta wajib menjawab pertanyaan tersebut sebelum mengirim polling.
+        - Jadwal harus dimiliki oleh pengguna yang sedang terautentikasi.
+        - Polling hanya dapat dibuat pada jadwal yang masih tersedia dan belum dihapus.
+
+      parameters:
+        - in: path
+          name: meeting_id
+          required: true
+          schema:
+            type: string
+            example: "93803081286"
+          description: Zoom Meeting ID dari jadwal yang akan diberi polling.
+
+        - in: header
+          name: Content-Type
+          required: true
+          schema:
+            type: string
+            example: application/json
+
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            example: application/json
+
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePollRequest"
+            examples:
+              singleChoicePoll:
+                summary: Polling dengan satu pertanyaan Single Choice
+                value:
+                  poll_title: "Evaluasi Materi Webinar"
+                  questions:
+                    - question_type: "single_choice"
+                      question: "Seberapa mudah materi webinar ini dipahami?"
+                      required: true
+                      options:
+                        - "Sangat mudah"
+                        - "Mudah"
+                        - "Cukup sulit"
+                        - "Sangat sulit"
+
+              multipleChoicePoll:
+                summary: Polling dengan pertanyaan Multiple Choice
+                value:
+                  poll_title: "Topik yang Paling Diminati"
+                  questions:
+                    - question_type: "multiple_choice"
+                      question: "Topik apa yang ingin Anda pelajari selanjutnya?"
+                      required: false
+                      options:
+                        - "Digital Marketing"
+                        - "Manajemen Keuangan"
+                        - "Pengembangan Produk"
+                        - "Artificial Intelligence"
+
+              pollWithMultipleQuestions:
+                summary: Polling dengan beberapa pertanyaan
+                value:
+                  poll_title: "Evaluasi Sesi Pelatihan"
+                  questions:
+                    - question_type: "single_choice"
+                      question: "Bagaimana penilaian Anda terhadap pemateri?"
+                      required: true
+                      options:
+                        - "Sangat baik"
+                        - "Baik"
+                        - "Cukup"
+                        - "Kurang"
+
+                    - question_type: "multiple_choice"
+                      question: "Bagian mana yang paling bermanfaat?"
+                      required: false
+                      options:
+                        - "Pemaparan materi"
+                        - "Studi kasus"
+                        - "Diskusi"
+                        - "Sesi tanya jawab"
+
+                    - question_type: "single_choice"
+                      question: "Apakah Anda bersedia mengikuti pelatihan berikutnya?"
+                      required: true
+                      options:
+                        - "Ya"
+                        - "Tidak"
+
+      responses:
+        '201':
+          description: Poll created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatePollSuccessResponse"
+              example:
+                response:
+                  status: success
+                  status_code: 201
+                  message: Poll created successfully
+                data:
+                  id: 27
+                  meeting_id: "83803081288"
+                  poll_title: "Evaluasi Sesi Pelatihan"
+                  status: "draft"
+                  total_questions: 3
+                  questions:
+                    - id: 81
+                      order: 1
+                      question_type: "single_choice"
+                      question: "Bagaimana penilaian Anda terhadap pemateri?"
+                      required: true
+                      options:
+                        - id: 201
+                          order: 1
+                          option: "Sangat baik"
+                        - id: 202
+                          order: 2
+                          option: "Baik"
+                        - id: 203
+                          order: 3
+                          option: "Cukup"
+                        - id: 204
+                          order: 4
+                          option: "Kurang"
+
+                    - id: 82
+                      order: 2
+                      question_type: "multiple_choice"
+                      question: "Bagian mana yang paling bermanfaat?"
+                      required: false
+                      options:
+                        - id: 205
+                          order: 1
+                          option: "Pemaparan materi"
+                        - id: 206
+                          order: 2
+                          option: "Studi kasus"
+                        - id: 207
+                          order: 3
+                          option: "Diskusi"
+                        - id: 208
+                          order: 4
+                          option: "Sesi tanya jawab"
+
+                    - id: 83
+                      order: 3
+                      question_type: "single_choice"
+                      question: "Apakah Anda bersedia mengikuti pelatihan berikutnya?"
+                      required: true
+                      options:
+                        - id: 209
+                          order: 1
+                          option: "Ya"
+                        - id: 210
+                          order: 2
+                          option: "Tidak"
+
+                  created_at: "2026-07-13T08:30:00.000000Z"
+                  updated_at: "2026-07-13T08:30:00.000000Z"
+
+        '400':
+          description: Bad request
+
+        '401':
+          description: Unauthorized atau token tidak valid
+
+        '404':
+          description: Schedule not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                response:
+                  status: error
+                  status_code: 404
+                  message: Schedule not found
+
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PollValidationErrorResponse"
+              examples:
+                emptyQuestions:
+                  summary: Pertanyaan tidak tersedia
+                  value:
+                    response:
+                      status: error
+                      status_code: 422
+                      message: Validation error
+                    errors:
+                      questions:
+                        - "The questions field must contain at least 1 item."
+
+                insufficientOptions:
+                  summary: Opsi jawaban kurang dari dua
+                  value:
+                    response:
+                      status: error
+                      status_code: 422
+                      message: Validation error
+                    errors:
+                      questions.0.options:
+                        - "Each question must have at least 2 answer options."
+
+                invalidQuestionType:
+                  summary: Jenis pertanyaan tidak valid
+                  value:
+                    response:
+                      status: error
+                      status_code: 422
+                      message: Validation error
+                    errors:
+                      questions.0.question_type:
+                        - "The selected question type is invalid."
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreatePollRequest:
+      type: object
+      required:
+        - poll_title
+        - questions
+      properties:
+        poll_title:
+          type: string
+          maxLength: 200
+          description: Judul polling.
+          example: Evaluasi Sesi Pelatihan
+
+        questions:
+          type: array
+          minItems: 1
+          description: Daftar pertanyaan dalam polling.
+          items:
+            $ref: "#/components/schemas/CreatePollQuestionRequest"
+
+    CreatePollQuestionRequest:
+      type: object
+      required:
+        - question_type
+        - question
+        - required
+        - options
+      properties:
+        question_type:
+          type: string
+          enum:
+            - single_choice
+            - multiple_choice
+          description: |-
+            Jenis pertanyaan:
+
+            - single_choice = peserta hanya dapat memilih satu jawaban
+            - multiple_choice = peserta dapat memilih lebih dari satu jawaban
+          example: single_choice
+
+        question:
+          type: string
+          maxLength: 500
+          description: Teks pertanyaan polling.
+          example: Bagaimana penilaian Anda terhadap pemateri?
+
+        required:
+          type: boolean
+          default: false
+          description: |-
+            Menentukan apakah pertanyaan wajib dijawab.
+
+            - true = wajib dijawab
+            - false = tidak wajib dijawab
+          example: true
+
+        options:
+          type: array
+          minItems: 2
+          description: Daftar opsi jawaban. Minimal terdiri dari dua opsi.
+          items:
+            type: string
+            maxLength: 255
+          example:
+            - Sangat baik
+            - Baik
+            - Cukup
+            - Kurang
+
+    CreatePollSuccessResponse:
+      type: object
+      properties:
+        response:
+          $ref: "#/components/schemas/SuccessResponse201"
+
+        data:
+          $ref: "#/components/schemas/PollDetail"
+
+    PollDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID polling internal Rapatin.
+          example: 27
+
+        meeting_id:
+          type: string
+          description: Zoom Meeting ID dari jadwal.
+          example: "83803081288"
+
+        poll_title:
+          type: string
+          description: Judul polling.
+          example: Evaluasi Sesi Pelatihan
+
+        status:
+          type: string
+          enum:
+            - draft
+            - active
+            - closed
+          description: |-
+            Status polling:
+
+            - draft = polling telah dibuat tetapi belum dijalankan
+            - active = polling sedang aktif
+            - closed = polling telah ditutup
+          example: draft
+
+        total_questions:
+          type: integer
+          description: Jumlah pertanyaan dalam polling.
+          example: 3
+
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PollQuestion"
+
+        created_at:
+          type: string
+          format: date-time
+          description: Tanggal dan waktu polling dibuat.
+
+        updated_at:
+          type: string
+          format: date-time
+          description: Tanggal dan waktu terakhir polling diperbarui.
+
+    PollQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID pertanyaan internal Rapatin.
+          example: 81
+
+        order:
+          type: integer
+          description: Urutan pertanyaan dalam polling.
+          example: 1
+
+        question_type:
+          type: string
+          enum:
+            - single_choice
+            - multiple_choice
+          description: Jenis pertanyaan.
+          example: single_choice
+
+        question:
+          type: string
+          description: Teks pertanyaan.
+          example: Bagaimana penilaian Anda terhadap pemateri?
+
+        required:
+          type: boolean
+          description: Menunjukkan apakah pertanyaan wajib dijawab.
+          example: true
+
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/PollOption"
+
+    PollOption:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID opsi jawaban internal Rapatin.
+          example: 201
+
+        order:
+          type: integer
+          description: Urutan opsi jawaban.
+          example: 1
+
+        option:
+          type: string
+          description: Isi opsi jawaban.
+          example: Sangat baik
+
+    SuccessResponse201:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+
+        status_code:
+          type: integer
+          example: 201
+
+        message:
+          type: string
+          example: Poll created successfully
+
+    ErrorResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+
+            status_code:
+              type: integer
+              example: 404
+
+            message:
+              type: string
+              example: Schedule not found
+
+    PollValidationErrorResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+
+            status_code:
+              type: integer
+              example: 422
+
+            message:
+              type: string
+              example: Validation error
+
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
