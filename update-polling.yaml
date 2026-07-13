@@ -11,7 +11,7 @@ paths:
   /schedules/{meeting_id}/polls:
     put:
       tags:
-      - Update Schedule Pollings
+      - Update Polling
       summary: Memperbarui polling pada jadwal
       description: 'Memperbarui polling pada sebuah jadwal meeting berdasarkan `meeting_id`.
 
