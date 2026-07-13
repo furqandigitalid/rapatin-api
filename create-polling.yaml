@@ -9,14 +9,13 @@ servers:
   - url: https://api.rapatin.id
 
 tags:
-  - name: Polling
-    description: Pengelolaan polling pada jadwal rapat.
+  - name: Create Schedule Poll
 
 paths:
   /schedules/{meeting_id}/polls:
     post:
       tags:
-        - Polling
+        - Create Schedule Poll
       summary: Membuat polling pada jadwal
       description: |-
         Membuat polling baru pada sebuah jadwal meeting Zoom berdasarkan `meeting_id`.
