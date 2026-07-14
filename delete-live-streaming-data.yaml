@@ -1,0 +1,76 @@
+openapi: 3.0.0
+servers:
+- url: https://api.rapatin.id
+tags:
+- name: Live Streaming
+  description: Pengelolaan live streaming pada jadwal rapat.
+info:
+  title: Delete Schedule Live Streaming
+  version: 1.0.0
+  description: Spesifikasi untuk menghapus data live streaming pada sebuah jadwal rapat Rapatin.
+paths:
+  /schedules/{meeting_id}/live-streaming:
+    delete:
+      tags:
+      - Delete Live Streaming Data
+      summary: Menghapus data live streaming pada jadwal
+      description: Menghapus konfigurasi live streaming pada sebuah jadwal meeting berdasarkan `meeting_id`.
+      parameters:
+      - in: path
+        name: meeting_id
+        required: true
+        description: Zoom Meeting ID dari jadwal.
+        schema:
+          type: string
+          example: '84887441426'
+      - in: header
+        name: Content-Type
+        required: true
+        description: Format data yang dikirim.
+        schema:
+          type: string
+          example: application/json
+      - in: header
+        name: Authorization
+        required: true
+        description: Token autentikasi dalam format Bearer.
+        schema:
+          type: string
+          example: Bearer {{token}}
+      responses:
+        '200':
+          description: Live streaming data deleted successfully
+          content:
+            application/json:
+              example:
+                response:
+                  status: success
+                  status_code: 200
+                  message: Live streaming data deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              example:
+                response:
+                  status: error
+                  status_code: 401
+                  message: Unauthenticated
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              example:
+                response:
+                  status: error
+                  status_code: 403
+                  message: You are not authorized to update this schedule
+        '404':
+          description: Live streaming data not found
+          content:
+            application/json:
+              example:
+                response:
+                  status: error
+                  status_code: 404
+                  message: Live streaming data not found
