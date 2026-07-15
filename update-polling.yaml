@@ -60,7 +60,7 @@ paths:
         schema:
           type: string
           maxLength: 255
-          example: 57kj4tqOQ9CKxmeetFtECg
+          example: 117
       - in: header
         name: Content-Type
         required: true
