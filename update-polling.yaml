@@ -6,7 +6,7 @@ info:
 servers:
 - url: https://api.rapatin.id
 tags:
-- name: Polling
+- name: Update Polling
 paths:
   /schedules/{meeting_id}/polls/{poll_id}:
     put:
