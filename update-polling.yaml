@@ -28,7 +28,7 @@ paths:
         description: ID polling yang akan diperbarui.
         schema:
           type: string
-          example: 57kj4tqOQ9CKxmeetFtECg
+          example: 117
       - in: header
         name: Content-Type
         required: true
