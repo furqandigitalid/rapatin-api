@@ -8,12 +8,12 @@ servers:
 tags:
 - name: Update Polling
 paths:
-  /schedules/{meeting_id}/polls/{poll_id}:
+  /schedules/{meeting_id}/polls/{id}:
     put:
       tags:
       - Polling
       summary: Memperbarui polling pada jadwal
-      description: Memperbarui polling pada sebuah jadwal meeting berdasarkan `meeting_id` dan `poll_id`.
+      description: Memperbarui polling pada sebuah jadwal meeting berdasarkan `meeting_id` dan `id`.
       parameters:
       - in: path
         name: meeting_id
@@ -23,7 +23,7 @@ paths:
           type: string
           example: '84887441426'
       - in: path
-        name: poll_id
+        name: id
         required: true
         description: ID polling yang akan diperbarui.
         schema:
