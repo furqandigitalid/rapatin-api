@@ -6,12 +6,12 @@ info:
 servers:
 - url: https://api.rapatin.id
 tags:
-- name: Update Polling
+- name: Update Schedule Poll
 paths:
   /schedules/{meeting_id}/polls/{id}:
     put:
       tags:
-      - Polling
+      - Update Polling
       summary: Memperbarui polling pada jadwal
       description: Memperbarui polling pada sebuah jadwal meeting berdasarkan `meeting_id` dan `id`.
       parameters:
