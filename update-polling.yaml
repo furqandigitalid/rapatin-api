@@ -1,79 +1,43 @@
 openapi: 3.0.0
 info:
   title: Update Schedule Poll
-  version: 1.1.0
+  version: 2.0.0
   description: Spesifikasi untuk memperbarui polling pada sebuah jadwal rapat Rapatin.
 servers:
 - url: https://api.rapatin.id
 tags:
-- name: Update Schedule Polling
+- name: Polling
 paths:
-  /schedules/{meeting_id}/polls:
+  /schedules/{meeting_id}/polls/{poll_id}:
     put:
       tags:
-      - Update Polling
+      - Polling
       summary: Memperbarui polling pada jadwal
-      description: 'Memperbarui polling pada sebuah jadwal meeting berdasarkan `meeting_id`.
-
-
-        Polling yang akan diperbarui ditentukan melalui query parameter `id`.
-
-
-        Seluruh data `title` dan `questions` akan menggantikan data polling sebelumnya.
-
-
-        **Jenis pertanyaan yang tersedia:**
-
-        - `single` — peserta hanya dapat memilih satu jawaban.
-
-        - `multiple` — peserta dapat memilih lebih dari satu jawaban.
-
-
-        **Ketentuan:**
-
-        - Query parameter `id` wajib diisi.
-
-        - `title` wajib diisi.
-
-        - Minimal terdapat satu pertanyaan.
-
-        - Setiap pertanyaan wajib memiliki minimal dua jawaban.
-
-        - Jika `required = true`, peserta wajib menjawab pertanyaan tersebut.
-
-        - Jadwal harus dimiliki oleh pengguna yang sedang terautentikasi.
-
-        '
+      description: Memperbarui polling pada sebuah jadwal meeting berdasarkan `meeting_id` dan `poll_id`.
       parameters:
       - in: path
         name: meeting_id
         required: true
-        description: Zoom Meeting ID dari jadwal yang pollingnya akan diperbarui.
+        description: Zoom Meeting ID dari jadwal.
         schema:
           type: string
-          maxLength: 255
           example: '84887441426'
-      - in: query
-        name: id
+      - in: path
+        name: poll_id
         required: true
         description: ID polling yang akan diperbarui.
         schema:
           type: string
-          maxLength: 255
-          example: 117
+          example: 57kj4tqOQ9CKxmeetFtECg
       - in: header
         name: Content-Type
         required: true
-        description: Format data yang dikirim.
         schema:
           type: string
-          enum:
-          - application/json
           example: application/json
       - in: header
         name: Authorization
         required: true
-        description: Token autentikasi dalam format Bearer.
         schema:
           type: string
           example: Bearer {{token}}
@@ -83,197 +47,65 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateSchedulePollRequest'
-            examples:
-              updatePoll:
-                summary: Memperbarui polling
-                value:
-                  title: Evaluasi Sesi Webinar
-                  questions:
-                  - type: single
-                    question: Bagaimana penilaian Anda terhadap materi webinar?
-                    answers:
-                    - text: Sangat baik
-                    - text: Baik
-                    - text: Cukup
-                    - text: Kurang
-                    required: true
-                  - type: multiple
-                    question: Topik apa yang ingin dipelajari selanjutnya?
-                    answers:
-                    - text: Digital Marketing
-                    - text: Manajemen Keuangan
-                    - text: Pengembangan Produk
-                    - text: Artificial Intelligence
-                    required: false
+            example:
+              title: Evaluasi Sesi Webinar
+              questions:
+              - type: single
+                question: Bagaimana penilaian Anda terhadap materi webinar?
+                answers:
+                - text: Sangat baik
+                - text: Baik
+                - text: Cukup
+                - text: Kurang
+                required: true
       responses:
         '200':
           description: Poll updated successfully
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/UpdateSchedulePollSuccessResponse'
               example:
                 response:
                   status: success
                   status_code: 200
                   message: Poll updated successfully
-                data:
-                  id: 117
-                  meeting_id: '84887441426'
-                  title: Evaluasi Sesi Webinar
-                  questions:
-                  - type: single
-                    question: Bagaimana penilaian Anda terhadap materi webinar?
-                    answers:
-                    - text: Sangat baik
-                    - text: Baik
-                    - text: Cukup
-                    - text: Kurang
-                    required: true
-                  - type: multiple
-                    question: Topik apa yang ingin dipelajari selanjutnya?
-                    answers:
-                    - text: Digital Marketing
-                    - text: Manajemen Keuangan
-                    - text: Pengembangan Produk
-                    - text: Artificial Intelligence
-                    required: false
-                  created_at: '2026-07-13T06:38:24.000000Z'
-                  updated_at: '2026-07-13T07:10:15.000000Z'
         '400':
-          description: Permintaan tidak dapat diproses
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                response:
-                  status: error
-                  status_code: 400
-                  message: Unable to update poll
+          description: Bad request
         '401':
-          description: Token tidak tersedia atau tidak valid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                response:
-                  status: error
-                  status_code: 401
-                  message: Unauthenticated
+          description: Unauthorized
         '403':
-          description: Pengguna tidak memiliki akses ke jadwal
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                response:
-                  status: error
-                  status_code: 403
-                  message: You are not authorized to update this poll
+          description: Forbidden
         '404':
-          description: Polling tidak ditemukan
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                response:
-                  status: error
-                  status_code: 404
-                  message: Poll not found
+          description: Poll not found
         '422':
           description: Validation error
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-              examples:
-                pollIdRequired:
-                  summary: ID polling tidak tersedia
-                  value:
-                    response:
-                      status: error
-                      status_code: 422
-                      message: Validation error
-                    errors:
-                      id:
-                      - The id field is required.
-                titleRequired:
-                  summary: Judul polling tidak tersedia
-                  value:
-                    response:
-                      status: error
-                      status_code: 422
-                      message: Validation error
-                    errors:
-                      title:
-                      - The title field is required.
-                emptyQuestions:
-                  summary: Pertanyaan tidak tersedia
-                  value:
-                    response:
-                      status: error
-                      status_code: 422
-                      message: Validation error
-                    errors:
-                      questions:
-                      - The questions field must contain at least 1 item.
-                invalidQuestionType:
-                  summary: Jenis pertanyaan tidak valid
-                  value:
-                    response:
-                      status: error
-                      status_code: 422
-                      message: Validation error
-                    errors:
-                      questions.0.type:
-                      - The selected questions.0.type is invalid.
-                questionRequired:
-                  summary: Teks pertanyaan tidak tersedia
-                  value:
-                    response:
-                      status: error
-                      status_code: 422
-                      message: Validation error
-                    errors:
-                      questions.0.question:
-                      - The questions.0.question field is required.
-                insufficientAnswers:
-                  summary: Jawaban kurang dari dua
-                  value:
-                    response:
-                      status: error
-                      status_code: 422
-                      message: Validation error
-                    errors:
-                      questions.0.answers:
-                      - The questions.0.answers field must contain at least 2 items.
+              example:
+                response:
+                  status: error
+                  status_code: 422
+                  message: Validation error
+                errors:
+                  title:
+                  - The title field is required.
 components:
   schemas:
     UpdateSchedulePollRequest:
       type: object
-      additionalProperties: false
       required:
       - title
       - questions
       properties:
         title:
           type: string
-          maxLength: 255
           description: Judul polling.
-          example: Evaluasi Sesi Webinar
         questions:
           type: array
-          minItems: 1
           description: Daftar pertanyaan dalam polling.
           items:
             $ref: '#/components/schemas/PollQuestion'
     PollQuestion:
       type: object
-      additionalProperties: false
       required:
       - type
       - question
@@ -285,157 +117,18 @@ components:
           enum:
           - single
           - multiple
-          description: Jenis pertanyaan. `single` untuk satu jawaban dan `multiple` untuk lebih dari satu jawaban.
-          example: single
         question:
           type: string
-          maxLength: 500
-          description: Teks pertanyaan polling.
-          example: Bagaimana penilaian Anda terhadap materi webinar?
         answers:
           type: array
-          minItems: 2
-          description: Daftar pilihan jawaban.
           items:
             $ref: '#/components/schemas/PollAnswer'
         required:
           type: boolean
-          default: false
-          description: Menentukan apakah pertanyaan wajib dijawab.
-          example: true
     PollAnswer:
       type: object
-      additionalProperties: false
       required:
       - text
       properties:
         text:
           type: string
-          maxLength: 255
-          description: Teks pilihan jawaban.
-          example: Sangat baik
-    UpdateSchedulePollSuccessResponse:
-      type: object
-      required:
-      - response
-      - data
-      properties:
-        response:
-          $ref: '#/components/schemas/SuccessResponse200'
-        data:
-          $ref: '#/components/schemas/MeetingPoll'
-    MeetingPoll:
-      type: object
-      required:
-      - id
-      - meeting_id
-      - title
-      - questions
-      - created_at
-      - updated_at
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: ID polling.
-          example: 117
-        meeting_id:
-          type: string
-          maxLength: 255
-          description: Zoom Meeting ID.
-          example: '84887441426'
-        title:
-          type: string
-          maxLength: 255
-          description: Judul polling.
-          example: Evaluasi Sesi Webinar
-        questions:
-          type: array
-          description: Daftar pertanyaan polling.
-          items:
-            $ref: '#/components/schemas/PollQuestion'
-        created_at:
-          type: string
-          format: date-time
-          description: Waktu polling dibuat.
-          example: '2026-07-13T06:38:24.000000Z'
-        updated_at:
-          type: string
-          format: date-time
-          description: Waktu polling terakhir diperbarui.
-          example: '2026-07-13T07:10:15.000000Z'
-    SuccessResponse200:
-      type: object
-      required:
-      - status
-      - status_code
-      - message
-      properties:
-        status:
-          type: string
-          enum:
-          - success
-          example: success
-        status_code:
-          type: integer
-          enum:
-          - 200
-          example: 200
-        message:
-          type: string
-          example: Poll updated successfully
-    ErrorResponse:
-      type: object
-      required:
-      - response
-      properties:
-        response:
-          type: object
-          required:
-          - status
-          - status_code
-          - message
-          properties:
-            status:
-              type: string
-              enum:
-              - error
-              example: error
-            status_code:
-              type: integer
-              example: 404
-            message:
-              type: string
-              example: Poll not found
-    ValidationErrorResponse:
-      type: object
-      required:
-      - response
-      - errors
-      properties:
-        response:
-          type: object
-          required:
-          - status
-          - status_code
-          - message
-          properties:
-            status:
-              type: string
-              enum:
-              - error
-              example: error
-            status_code:
-              type: integer
-              enum:
-              - 422
-              example: 422
-            message:
-              type: string
-              example: Validation error
-        errors:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
